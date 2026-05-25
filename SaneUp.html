@@ -1,0 +1,2767 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#3bb143">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="SaneUp">
+<meta name="mobile-web-app-capable" content="yes">
+<title>SaneUp — Алғашқы көмек</title>
+<style>
+/* ===== ЦВЕТА SaneUp ===== */
+:root{
+  --green:#6fdaca;          /* мятно-бирюзовый фон */
+  --green-dark:#4cc3b0;
+  --green-deep:#2f9d8a;
+  --blue:#15365c;           /* ярко-синий (тёмно-синий из лого) */
+  --blue-bright:#1f5fae;    /* яркий синий акцент */
+  --white:#ffffff;
+  --ink:#15365c;            /* основной текст синий */
+  --ink-dim:#5d7186;
+  --red:#e63946;
+  --amber:#ff9f1c;
+  --radius:18px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;}
+body{
+  font-family:'Segoe UI',-apple-system,Roboto,'Helvetica Neue',sans-serif;
+  background:var(--green);
+  color:var(--ink);
+  overflow:hidden;
+  user-select:none;
+}
+button{font-family:inherit;cursor:pointer;border:none;}
+
+#app{
+  max-width:520px;margin:0 auto;height:100%;
+  display:flex;flex-direction:column;
+  background:linear-gradient(180deg,#7ee3d3 0%,#5cc9b8 100%);
+}
+
+/* ===== ШАПКА ===== */
+header{
+  padding:14px 18px;
+  background:var(--white);
+  border-bottom:3px solid var(--blue);
+  display:flex;align-items:center;gap:12px;
+  flex-shrink:0;
+}
+header .logo-box{
+  display:flex;align-items:center;gap:10px;flex:1;min-width:0;
+}
+header img.logo{height:36px;width:auto;}
+#langSlot{flex-shrink:0;}
+header .net{
+  display:flex;align-items:center;gap:6px;
+  font-size:10.5px;font-weight:700;color:var(--ink-dim);
+  background:#eef3f8;padding:5px 9px;border-radius:20px;
+  flex-shrink:0;
+}
+#netDot{width:9px;height:9px;border-radius:50%;background:var(--red);}
+#netDot.online{background:var(--green);}
+
+/* ===== ОБЛАСТЬ ЭКРАНОВ ===== */
+main{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+.screen{display:none;padding:18px 16px 90px;animation:fade .25s ease;}
+.screen.active{display:block;}
+@keyframes fade{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+
+/* ===== ПОГОДНЫЙ БАННЕР ===== */
+.weather-banner{
+  background:var(--white);
+  border:3px solid var(--blue);
+  border-radius:var(--radius);
+  padding:13px 15px;margin-bottom:16px;
+  display:flex;align-items:center;gap:13px;
+}
+.weather-banner .wicon{font-size:30px;}
+.weather-banner .wtext{flex:1;}
+.weather-banner .wtitle{font-size:13px;font-weight:800;color:var(--blue);}
+.weather-banner .wdesc{font-size:11.5px;color:var(--ink-dim);margin-top:3px;line-height:1.4;}
+.weather-banner.warn{border-color:var(--amber);background:#fff7ec;}
+.weather-banner.warn .wtitle{color:var(--amber);}
+
+/* ===== ГЛАВНЫЙ ЭКРАН ===== */
+.hero{text-align:center;margin-bottom:20px;}
+.hero h2{font-size:21px;font-weight:800;color:var(--white);text-shadow:0 1px 3px rgba(0,0,0,.18);}
+.hero p{font-size:12.5px;color:#eafffb;margin-top:6px;}
+
+.menu-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.menu-btn{
+  background:var(--white);
+  border:3px solid var(--blue);
+  border-radius:var(--radius);
+  padding:22px 14px;
+  display:flex;flex-direction:column;align-items:center;gap:10px;
+  color:var(--ink);
+  box-shadow:0 4px 0 rgba(21,54,92,.25);
+  transition:transform .1s ease, box-shadow .1s ease;
+}
+.menu-btn:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(21,54,92,.25);}
+.menu-btn .ic{
+  width:58px;height:58px;border-radius:16px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:30px;background:#eef3f8;
+}
+.menu-btn.help .ic{background:#fdeaec;}
+.menu-btn.learn .ic{background:#e9f3ff;}
+.menu-btn.call .ic{background:#fff2dd;}
+.menu-btn.info .ic{background:#eaf7e8;}
+.menu-btn .label{font-size:15.5px;font-weight:800;color:var(--blue);}
+.menu-btn .sub{font-size:10.5px;color:var(--ink-dim);text-align:center;line-height:1.3;}
+
+/* ===== КНОПКА НАЗАД ===== */
+.back{
+  display:inline-flex;align-items:center;gap:7px;
+  background:var(--white);border:2.5px solid var(--blue);
+  color:var(--blue);font-size:13px;font-weight:800;
+  padding:9px 15px;border-radius:12px;margin-bottom:14px;
+}
+.back:active{background:#eef3f8;}
+
+.screen-title{font-size:19px;font-weight:800;color:var(--white);margin-bottom:3px;text-shadow:0 1px 3px rgba(0,0,0,.18);}
+.screen-desc{font-size:12px;color:#eafffb;margin-bottom:15px;}
+
+/* ===== ПОИСК ===== */
+.search-wrap{position:relative;margin-bottom:15px;}
+.search-wrap input{
+  width:100%;padding:14px 42px 14px 44px;
+  background:var(--white);border:3px solid var(--blue);
+  border-radius:14px;color:var(--ink);font-size:14.5px;font-weight:600;
+  outline:none;
+}
+.search-wrap input::placeholder{color:#9fb0c2;font-weight:500;}
+.search-wrap input:focus{border-color:var(--blue-bright);}
+.search-wrap .sicon{
+  position:absolute;left:15px;top:50%;transform:translateY(-50%);
+  font-size:17px;
+}
+.search-wrap .clr{
+  position:absolute;right:11px;top:50%;transform:translateY(-50%);
+  background:#eef3f8;color:var(--ink-dim);
+  width:25px;height:25px;border-radius:50%;font-size:14px;
+  display:none;line-height:1;
+}
+
+/* ===== СЕТКА ЯЧЕЕК ===== */
+.cells{display:grid;grid-template-columns:1fr 1fr;gap:11px;}
+.cell{
+  background:var(--white);border:2.5px solid var(--blue);
+  border-radius:15px;padding:15px 10px;
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  color:var(--ink);
+  box-shadow:0 3px 0 rgba(21,54,92,.2);
+  transition:transform .1s ease,box-shadow .1s ease;
+}
+.cell:active{transform:translateY(3px);box-shadow:0 0 0 rgba(21,54,92,.2);}
+.cell .cic{font-size:27px;}
+.cell .cname{font-size:12px;font-weight:800;color:var(--blue);text-align:center;line-height:1.25;}
+.no-results{
+  grid-column:1/-1;text-align:center;padding:34px 12px;
+  color:var(--white);font-size:13.5px;font-weight:600;
+}
+
+/* ===== ДЕТАЛЬНАЯ КАРТОЧКА ===== */
+.detail-head{
+  background:var(--blue);
+  border-radius:var(--radius);padding:18px 16px;margin-bottom:14px;
+  display:flex;align-items:center;gap:13px;
+}
+.detail-head .dic{font-size:38px;}
+.detail-head h3{font-size:18px;font-weight:800;color:var(--white);}
+.detail-head .dwhen{font-size:11px;color:#bcd3ea;margin-top:3px;line-height:1.35;}
+
+.block{
+  background:var(--white);border:2.5px solid var(--blue);
+  border-radius:15px;padding:14px 15px;margin-bottom:11px;
+}
+.block h4{
+  font-size:13px;font-weight:800;margin-bottom:9px;
+  display:flex;align-items:center;gap:7px;color:var(--blue);
+}
+.block h4 .bic{font-size:16px;}
+.block.why{border-color:var(--blue-bright);}
+.block.why h4{color:var(--blue-bright);}
+.block.danger{border-color:var(--red);}
+.block.danger h4{color:var(--red);}
+
+.steps{counter-reset:step;list-style:none;}
+.steps li{
+  position:relative;padding:8px 0 8px 36px;
+  font-size:13px;line-height:1.5;color:var(--ink);
+  border-bottom:1px solid #e7edf3;
+}
+.steps li:last-child{border-bottom:none;}
+.steps li::before{
+  counter-increment:step;content:counter(step);
+  position:absolute;left:0;top:7px;
+  width:25px;height:25px;border-radius:8px;
+  background:var(--green);color:var(--white);
+  font-size:12px;font-weight:800;
+  display:flex;align-items:center;justify-content:center;
+}
+.donts{list-style:none;}
+.donts li{
+  padding:6px 0 6px 25px;font-size:12.5px;line-height:1.45;
+  color:var(--ink-dim);position:relative;
+}
+.donts li::before{
+  content:"✕";position:absolute;left:0;top:6px;
+  color:var(--red);font-weight:800;font-size:13px;
+}
+.whytext{font-size:12.5px;line-height:1.55;color:var(--ink);}
+
+/* ===== ОБУЧЕНИЕ ===== */
+.learn-card{
+  background:var(--white);border:2.5px solid var(--blue);
+  border-radius:15px;margin-bottom:11px;overflow:hidden;
+}
+.learn-q{
+  padding:14px 15px;display:flex;align-items:center;gap:10px;
+  font-size:13.5px;font-weight:800;color:var(--blue);
+}
+.learn-q .qmark{
+  width:26px;height:26px;border-radius:8px;flex-shrink:0;
+  background:var(--blue-bright);color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;font-weight:800;
+}
+.learn-q .chev{margin-left:auto;font-size:13px;color:var(--ink-dim);transition:transform .2s;}
+.learn-card.open .learn-q .chev{transform:rotate(180deg);}
+.learn-a{
+  max-height:0;overflow:hidden;transition:max-height .25s ease;
+  font-size:12.5px;line-height:1.55;color:var(--ink-dim);
+}
+.learn-card.open .learn-a{max-height:400px;}
+.learn-a .inner{padding:0 15px 14px;border-top:1px solid #e7edf3;padding-top:11px;}
+
+/* ===== ЗВОНОК ===== */
+.call-note{
+  background:var(--white);border:2.5px solid var(--blue);
+  border-radius:14px;padding:12px 14px;margin-bottom:14px;
+  font-size:12px;line-height:1.5;color:var(--ink-dim);
+}
+.call-note b{color:var(--blue);}
+.call-list{display:flex;flex-direction:column;gap:11px;}
+.call-btn{
+  background:var(--white);border:3px solid var(--blue);
+  border-radius:16px;padding:15px 16px;
+  display:flex;align-items:center;gap:14px;
+  text-align:left;color:var(--ink);
+  box-shadow:0 3px 0 rgba(21,54,92,.2);
+  transition:transform .1s ease,box-shadow .1s ease;
+}
+.call-btn:active{transform:translateY(3px);box-shadow:0 0 0 rgba(21,54,92,.2);}
+.call-btn .cnum{
+  width:60px;height:60px;border-radius:14px;flex-shrink:0;
+  background:var(--red);color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-size:21px;font-weight:800;
+}
+.call-btn.green .cnum{background:var(--green);}
+.call-btn.blue .cnum{background:var(--blue-bright);}
+.call-btn .ctext{flex:1;}
+.call-btn .cname{font-size:15px;font-weight:800;color:var(--blue);}
+.call-btn .cdesc{font-size:11.5px;color:var(--ink-dim);margin-top:2px;line-height:1.35;}
+.call-btn .cphone{font-size:24px;}
+
+/* ===== ГЕО-БЛОК ===== */
+.geo-box{
+  background:var(--white);border:2.5px dashed var(--blue);
+  border-radius:14px;padding:13px 14px;margin-top:14px;
+  font-size:12px;line-height:1.5;color:var(--ink);
+}
+.geo-box .geo-title{font-weight:800;color:var(--blue);margin-bottom:5px;display:flex;align-items:center;gap:6px;}
+.geo-coords{font-weight:700;color:var(--green-deep);margin-top:6px;}
+.geo-btn{
+  margin-top:9px;background:var(--blue-bright);color:#fff;
+  font-size:12px;font-weight:800;padding:9px 14px;border-radius:10px;
+}
+
+/* ===== INFO / О ПРИЛОЖЕНИИ ===== */
+.info-card{
+  background:var(--white);border:2.5px solid var(--blue);
+  border-radius:15px;padding:15px 16px;margin-bottom:11px;
+  font-size:12.5px;line-height:1.6;color:var(--ink);
+}
+.info-card h4{font-size:14px;font-weight:800;color:var(--blue);margin-bottom:7px;}
+.info-card ul{margin:6px 0 0 18px;}
+.info-card li{margin-bottom:4px;}
+
+/* ===== ТОСТ ===== */
+#toast{
+  position:fixed;left:50%;bottom:30px;transform:translateX(-50%) translateY(100px);
+  background:var(--blue);color:#fff;
+  padding:12px 20px;border-radius:30px;
+  font-size:13px;font-weight:700;
+  box-shadow:0 6px 20px rgba(0,0,0,.3);
+  transition:transform .3s ease;z-index:100;
+  max-width:90%;text-align:center;
+}
+#toast.show{transform:translateX(-50%) translateY(0);}
+
+/* ===== ПЕРЕКЛЮЧАТЕЛЬ ЯЗЫКА ===== */
+.lang-select{
+  font-family:inherit;font-size:12px;font-weight:700;
+  color:var(--blue);background:#eef3f8;
+  border:2px solid var(--blue);border-radius:20px;
+  padding:5px 8px;outline:none;cursor:pointer;
+  max-width:118px;
+}
+
+/* ===== ПОМЕТКА ОБ АНГЛИЙСКОМ КОНТЕНТЕ ===== */
+.en-note{
+  background:var(--white);border:2px dashed var(--blue-bright);
+  border-radius:12px;padding:9px 12px;margin-bottom:13px;
+  font-size:11.5px;line-height:1.45;color:var(--blue);
+}
+
+/* ===== RTL (арабский) ===== */
+[dir="rtl"] .back{flex-direction:row-reverse;}
+[dir="rtl"] .detail-head,
+[dir="rtl"] .call-btn,
+[dir="rtl"] .weather-banner,
+[dir="rtl"] .learn-q,
+[dir="rtl"] header{flex-direction:row-reverse;}
+[dir="rtl"] .steps li{padding:8px 36px 8px 0;}
+[dir="rtl"] .steps li::before{left:auto;right:0;}
+[dir="rtl"] .donts li{padding:6px 25px 6px 0;}
+[dir="rtl"] .donts li::before{left:auto;right:0;}
+[dir="rtl"] .search-wrap input{padding:14px 44px 14px 42px;text-align:right;}
+[dir="rtl"] .search-wrap .sicon{left:auto;right:15px;}
+[dir="rtl"] .search-wrap .clr{right:auto;left:11px;}
+[dir="rtl"] .info-card ul{margin:6px 18px 0 0;}
+[dir="rtl"] .learn-q .chev{margin-left:0;margin-right:auto;}
+
+/* ===== НИЖНЯЯ ПАНЕЛЬ ===== */
+.tabbar{
+  display:flex;background:var(--white);
+  border-top:3px solid var(--blue);
+  flex-shrink:0;
+}
+.tabbar button{
+  flex:1;background:none;padding:9px 4px 8px;
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  color:var(--ink-dim);font-size:10px;font-weight:700;
+}
+.tabbar button .tic{font-size:19px;}
+.tabbar button.active{color:var(--blue-bright);}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ШАПКА -->
+  <header>
+    <div class="logo-box">
+      <img class="logo" id="logoImg" alt="SaneUp">
+    </div>
+    <span id="langSlot"></span>
+    <div class="net">
+      <span id="netDot"></span>
+      <span id="netLabel">offline</span>
+    </div>
+  </header>
+
+  <!-- ЭКРАНЫ -->
+  <main id="main"><!-- генерируется JS --></main>
+
+  <!-- НИЖНЯЯ ПАНЕЛЬ -->
+  <nav class="tabbar" id="tabbar">
+    <button data-go="home" class="active"><span class="tic">🏠</span><span class="tlabel">Home</span></button>
+    <button data-go="help"><span class="tic">🚑</span><span class="tlabel">Help</span></button>
+    <button data-go="learn"><span class="tic">📘</span><span class="tlabel">Learn</span></button>
+    <button data-go="call"><span class="tic">📞</span><span class="tlabel">Call</span></button>
+  </nav>
+
+</div>
+
+<div id="toast"></div>
+
+<script>
+const LOGO_BASE64 = "data:image/png;base64,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";
+
+/* ============================================================
+   SaneUp — ПЕРЕВОДЫ ИНТЕРФЕЙСА (UI)
+   11 языков. Ключи интерфейса переведены полностью.
+   ============================================================ */
+
+/* Список языков: code, родное название, флаг, направление текста */
+const LANGS = [
+  { code: "kk", name: "Қазақша",    flag: "🇰🇿", dir: "ltr" },
+  { code: "ru", name: "Русский",    flag: "🇷🇺", dir: "ltr" },
+  { code: "en", name: "English",    flag: "🇬🇧", dir: "ltr" },
+  { code: "uz", name: "O‘zbekcha",  flag: "🇺🇿", dir: "ltr" },
+  { code: "ky", name: "Кыргызча",   flag: "🇰🇬", dir: "ltr" },
+  { code: "tr", name: "Türkçe",     flag: "🇹🇷", dir: "ltr" },
+  { code: "zh", name: "中文",        flag: "🇨🇳", dir: "ltr" },
+  { code: "es", name: "Español",    flag: "🇪🇸", dir: "ltr" },
+  { code: "ar", name: "العربية",    flag: "🇸🇦", dir: "rtl" },
+  { code: "fr", name: "Français",   flag: "🇫🇷", dir: "ltr" },
+  { code: "de", name: "Deutsch",    flag: "🇩🇪", dir: "ltr" }
+];
+
+/* Для каких языков есть полный перевод медицинского контента */
+const FULL_CONTENT_LANGS = ["kk", "ru", "en"];
+
+/* Переводы строк интерфейса */
+const UI = {
+  kk: {
+    appSub: "Бірінші көмек — қарапайым тілмен. Жедел жағдайда не істеу керек.",
+    appTitle: "Алғашқы көмек",
+    online: "онлайн", offline: "офлайн",
+    mHelp: "Көмек", mHelpSub: "16 жағдай — не істеу керек",
+    mLearn: "Оқу", mLearnSub: "Неге дәл осылай",
+    mCall: "Қоңырау", mCallSub: "Жедел қызметтер",
+    mInfo: "Қосымша", mInfoSub: "Қолданба туралы",
+    tabHome: "Басты", tabHelp: "Көмек", tabLearn: "Оқу", tabCall: "Қоңырау",
+    back: "← Артқа", backList: "← Тізімге",
+    helpDesc: "Жағдайды табыңыз немесе тізімнен таңдаңыз.",
+    searchPh: "Жазыңыз, мысалы: күйік, қан, шағу...",
+    noResults: "Сұраныс бойынша ештеңе табылмады.",
+    tryOther: "Басқа сөз қолданып көріңіз.",
+    doSteps: "Не істеу керек — қадаммен",
+    dontDo: "Істеуге болмайды",
+    whyTitle: "Неге дәл осылай",
+    learnDesc: "Бірінші көмек неге дәл осылай көрсетіледі. Сұраққа басыңыз.",
+    callDesc: "Қызметке басыңыз — қолданба қоңырау шалады.",
+    callNote: "112 — біртұтас нөмір, баланссыз және SIM-картасыз да жұмыс істейді.",
+    geoTitle: "Орналасқан жер",
+    geoMyTitle: "Сіздің орналасқан жеріңіз",
+    geoOfflineMsg: "Қолданба алғаш рет интернетсіз ашылды, сондықтан орналасқан жер автоматты түрде сұралмады. Диспетчерге координаттарды беру үшін оны қолмен қосуға болады.",
+    geoOkMsg: "Координаттар анықталды, диспетчерге беру үшін көрсетіледі.",
+    geoNoMsg: "Орналасқан жер әлі анықталмаған.",
+    geoBtn: "Орналасқан жерді анықтау",
+    geoLat: "Ендік", geoLon: "Бойлық",
+    infoDesc: "SaneUp қолданбасы туралы.",
+    infoOfflineT: "Интернетсіз жұмыс істейді",
+    infoOfflineB: "Бірінші көмек туралы барлық ақпарат қолданба ішінде сақталады. Интернет тек ауа райы болжамын жаңарту үшін қажет.",
+    infoSectT: "Бөлімдер",
+    infoSrcT: "Ақпарат көзі",
+    infoSrcB: "Қазақстан Республикасының Алғашқы көмек көрсету стандарты (ҚР ДСМ-269/2020 бұйрығы).",
+    infoImpT: "Маңызды",
+    infoImpB: "Қолданба дәрігерлер келгенге дейін әрекет етуге көмектеседі және медициналық көмекті алмастырмайды. Өмірге қауіп төнсе — бірден 103 немесе 112 нөміріне қоңырау шалыңыз.",
+    langTitle: "Тіл",
+    weatherNotLoaded: " Болжам әлі жүктелмеген — интернетке қосылыңыз.",
+    toastOnline: "Интернет пайда болды — ауа райы болжамын жаңартудамын",
+    toastOffline: "Интернет жоқ — қолданба жұмысын жалғастыруда",
+    toastGeoSearch: "Орналасқан жер анықталуда...",
+    toastGeoOk: "Орналасқан жер анықталды",
+    toastGeoFail: "Орналасқан жерді анықтау мүмкін болмады",
+    toastCallGeo: "Координаттар диспетчерге дайын: ",
+    toastCallOffline: "Қоңырау шалынуда. Геолокацияны төменде қолмен қосуға болады.",
+    contentEnNote: "Бұл тіл үшін көмек мәтіндері ағылшын тілінде көрсетілген."
+  },
+  ru: {
+    appSub: "Первая помощь простым языком. Что делать в экстренной ситуации.",
+    appTitle: "Первая помощь",
+    online: "онлайн", offline: "офлайн",
+    mHelp: "Помощь", mHelpSub: "16 состояний — что делать",
+    mLearn: "Обучение", mLearnSub: "Почему именно так",
+    mCall: "Звонок", mCallSub: "Экстренные службы",
+    mInfo: "Ещё", mInfoSub: "О приложении",
+    tabHome: "Главная", tabHelp: "Помощь", tabLearn: "Обучение", tabCall: "Звонок",
+    back: "← Назад", backList: "← К списку",
+    helpDesc: "Найдите состояние или выберите из списка.",
+    searchPh: "Напишите, например: ожог, кровь, укус...",
+    noResults: "Ничего не найдено по запросу.",
+    tryOther: "Попробуйте другое слово.",
+    doSteps: "Что делать — по шагам",
+    dontDo: "Нельзя делать",
+    whyTitle: "Почему именно так",
+    learnDesc: "Почему первую помощь оказывают именно так. Нажмите на вопрос.",
+    callDesc: "Нажмите на службу — приложение начнёт звонок.",
+    callNote: "112 — единый номер, работает даже без баланса и SIM-карты.",
+    geoTitle: "Геолокация",
+    geoMyTitle: "Ваше местоположение",
+    geoOfflineMsg: "Приложение запущено впервые без интернета, поэтому местоположение не запрашивалось автоматически. Вы можете включить его вручную, чтобы передать координаты диспетчеру.",
+    geoOkMsg: "Координаты определены и будут показаны для передачи диспетчеру.",
+    geoNoMsg: "Местоположение пока не определено.",
+    geoBtn: "Определить местоположение",
+    geoLat: "Широта", geoLon: "долгота",
+    infoDesc: "О приложении SaneUp.",
+    infoOfflineT: "Работает без интернета",
+    infoOfflineB: "Вся информация по первой помощи хранится внутри приложения. Интернет нужен только для обновления прогноза погоды.",
+    infoSectT: "Разделы",
+    infoSrcT: "Источник информации",
+    infoSrcB: "Стандарт оказания первой помощи Республики Казахстан (Приказ № ҚР ДСМ-269/2020).",
+    infoImpT: "Важно",
+    infoImpB: "Приложение помогает действовать до приезда врачей и не заменяет медицинскую помощь. При угрозе жизни сразу звоните 103 или 112.",
+    langTitle: "Язык",
+    weatherNotLoaded: " Прогноз ещё не загружен — подключитесь к интернету.",
+    toastOnline: "Интернет появился — обновляю прогноз погоды",
+    toastOffline: "Нет интернета — приложение продолжает работать",
+    toastGeoSearch: "Определяю местоположение...",
+    toastGeoOk: "Местоположение определено",
+    toastGeoFail: "Не удалось определить местоположение",
+    toastCallGeo: "Координаты готовы для диспетчера: ",
+    toastCallOffline: "Звоню. Геолокацию можно включить вручную ниже.",
+    contentEnNote: "Для этого языка тексты помощи показаны на английском."
+  },
+  en: {
+    appSub: "First aid in plain language. What to do in an emergency.",
+    appTitle: "First Aid",
+    online: "online", offline: "offline",
+    mHelp: "Help", mHelpSub: "16 conditions — what to do",
+    mLearn: "Learn", mLearnSub: "Why it works this way",
+    mCall: "Call", mCallSub: "Emergency services",
+    mInfo: "More", mInfoSub: "About the app",
+    tabHome: "Home", tabHelp: "Help", tabLearn: "Learn", tabCall: "Call",
+    back: "← Back", backList: "← To list",
+    helpDesc: "Find a condition or pick from the list.",
+    searchPh: "Type, e.g.: burn, bleeding, bite...",
+    noResults: "Nothing found for your query.",
+    tryOther: "Try another word.",
+    doSteps: "What to do — step by step",
+    dontDo: "Do not do",
+    whyTitle: "Why it works this way",
+    learnDesc: "Why first aid is given this way. Tap a question.",
+    callDesc: "Tap a service — the app will start a call.",
+    callNote: "112 is the single emergency number, it works even without balance or a SIM card.",
+    geoTitle: "Location",
+    geoMyTitle: "Your location",
+    geoOfflineMsg: "The app was first opened without internet, so your location was not requested automatically. You can enable it manually to share coordinates with the dispatcher.",
+    geoOkMsg: "Coordinates detected and will be shown for the dispatcher.",
+    geoNoMsg: "Location not detected yet.",
+    geoBtn: "Detect my location",
+    geoLat: "Latitude", geoLon: "longitude",
+    infoDesc: "About the SaneUp app.",
+    infoOfflineT: "Works without internet",
+    infoOfflineB: "All first-aid information is stored inside the app. Internet is only needed to update the weather forecast.",
+    infoSectT: "Sections",
+    infoSrcT: "Source of information",
+    infoSrcB: "First Aid Standard of the Republic of Kazakhstan (Order No. KR DSM-269/2020).",
+    infoImpT: "Important",
+    infoImpB: "The app helps you act before doctors arrive and does not replace medical care. If life is in danger, call 103 or 112 immediately.",
+    langTitle: "Language",
+    weatherNotLoaded: " Forecast not loaded yet — connect to the internet.",
+    toastOnline: "Internet is back — updating the weather forecast",
+    toastOffline: "No internet — the app keeps working",
+    toastGeoSearch: "Detecting location...",
+    toastGeoOk: "Location detected",
+    toastGeoFail: "Could not detect location",
+    toastCallGeo: "Coordinates ready for the dispatcher: ",
+    toastCallOffline: "Calling. You can enable location manually below.",
+    contentEnNote: "For this language, help texts are shown in English."
+  },
+  uz: {
+    appSub: "Birinchi yordam oddiy tilda. Favqulodda holatda nima qilish kerak.",
+    appTitle: "Birinchi yordam",
+    online: "onlayn", offline: "oflayn",
+    mHelp: "Yordam", mHelpSub: "16 holat — nima qilish kerak",
+    mLearn: "O‘rganish", mLearnSub: "Nega aynan shunday",
+    mCall: "Qo‘ng‘iroq", mCallSub: "Favqulodda xizmatlar",
+    mInfo: "Yana", mInfoSub: "Ilova haqida",
+    tabHome: "Bosh", tabHelp: "Yordam", tabLearn: "O‘rganish", tabCall: "Qo‘ng‘iroq",
+    back: "← Orqaga", backList: "← Ro‘yxatga",
+    helpDesc: "Holatni toping yoki ro‘yxatdan tanlang.",
+    searchPh: "Yozing, masalan: kuyish, qon, chaqish...",
+    noResults: "So‘rov bo‘yicha hech narsa topilmadi.",
+    tryOther: "Boshqa so‘zni sinab ko‘ring.",
+    doSteps: "Nima qilish kerak — bosqichma-bosqich",
+    dontDo: "Qilish mumkin emas",
+    whyTitle: "Nega aynan shunday",
+    learnDesc: "Birinchi yordam nega aynan shunday ko‘rsatiladi. Savolni bosing.",
+    callDesc: "Xizmatni bosing — ilova qo‘ng‘iroq qiladi.",
+    callNote: "112 — yagona raqam, balans va SIM-kartasiz ham ishlaydi.",
+    geoTitle: "Joylashuv",
+    geoMyTitle: "Sizning joylashuvingiz",
+    geoOfflineMsg: "Ilova birinchi marta internetsiz ochildi, shuning uchun joylashuv avtomatik so‘ralmadi. Dispetcherga koordinatalarni berish uchun uni qo‘lda yoqishingiz mumkin.",
+    geoOkMsg: "Koordinatalar aniqlandi va dispetcher uchun ko‘rsatiladi.",
+    geoNoMsg: "Joylashuv hali aniqlanmagan.",
+    geoBtn: "Joylashuvni aniqlash",
+    geoLat: "Kenglik", geoLon: "uzunlik",
+    infoDesc: "SaneUp ilovasi haqida.",
+    infoOfflineT: "Internetsiz ishlaydi",
+    infoOfflineB: "Birinchi yordam haqidagi barcha ma’lumot ilova ichida saqlanadi. Internet faqat ob-havo prognozini yangilash uchun kerak.",
+    infoSectT: "Bo‘limlar",
+    infoSrcT: "Ma’lumot manbai",
+    infoSrcB: "Qozog‘iston Respublikasining Birinchi yordam standarti (Buyruq № KR DSM-269/2020).",
+    infoImpT: "Muhim",
+    infoImpB: "Ilova shifokorlar kelguncha harakat qilishga yordam beradi va tibbiy yordam o‘rnini bosmaydi. Hayot xavf ostida bo‘lsa, darhol 103 yoki 112 ga qo‘ng‘iroq qiling.",
+    langTitle: "Til",
+    weatherNotLoaded: " Prognoz hali yuklanmagan — internetga ulaning.",
+    toastOnline: "Internet paydo bo‘ldi — ob-havo prognozi yangilanmoqda",
+    toastOffline: "Internet yo‘q — ilova ishlashda davom etmoqda",
+    toastGeoSearch: "Joylashuv aniqlanmoqda...",
+    toastGeoOk: "Joylashuv aniqlandi",
+    toastGeoFail: "Joylashuvni aniqlab bo‘lmadi",
+    toastCallGeo: "Koordinatalar dispetcher uchun tayyor: ",
+    toastCallOffline: "Qo‘ng‘iroq qilinmoqda. Joylashuvni quyida qo‘lda yoqishingiz mumkin.",
+    contentEnNote: "Bu til uchun yordam matnlari ingliz tilida ko‘rsatilgan."
+  },
+  ky: {
+    appSub: "Биринчи жардам жөнөкөй тилде. Шашылыш кырдаалда эмне кылуу керек.",
+    appTitle: "Биринчи жардам",
+    online: "онлайн", offline: "оффлайн",
+    mHelp: "Жардам", mHelpSub: "16 абал — эмне кылуу керек",
+    mLearn: "Окуу", mLearnSub: "Эмне үчүн так ушундай",
+    mCall: "Чалуу", mCallSub: "Шашылыш кызматтар",
+    mInfo: "Дагы", mInfoSub: "Колдонмо жөнүндө",
+    tabHome: "Башкы", tabHelp: "Жардам", tabLearn: "Окуу", tabCall: "Чалуу",
+    back: "← Артка", backList: "← Тизмеге",
+    helpDesc: "Абалды табыңыз же тизмеден тандаңыз.",
+    searchPh: "Жазыңыз, мисалы: күйүк, кан, чагуу...",
+    noResults: "Суроо боюнча эч нерсе табылган жок.",
+    tryOther: "Башка сөздү колдонуп көрүңүз.",
+    doSteps: "Эмне кылуу керек — кадам менен",
+    dontDo: "Кылууга болбойт",
+    whyTitle: "Эмне үчүн так ушундай",
+    learnDesc: "Биринчи жардам эмне үчүн так ушундай көрсөтүлөт. Суроого басыңыз.",
+    callDesc: "Кызматка басыңыз — колдонмо чалат.",
+    callNote: "112 — бирдиктүү номер, баланссыз жана SIM-картасыз да иштейт.",
+    geoTitle: "Жайгашкан жер",
+    geoMyTitle: "Сиздин жайгашкан жериңиз",
+    geoOfflineMsg: "Колдонмо биринчи жолу интернетсиз ачылды, ошондуктан жайгашкан жер автоматтык түрдө суралган жок. Диспетчерге координаталарды берүү үчүн аны кол менен күйгүзсөңүз болот.",
+    geoOkMsg: "Координаталар аныкталды жана диспетчер үчүн көрсөтүлөт.",
+    geoNoMsg: "Жайгашкан жер азырынча аныкталган жок.",
+    geoBtn: "Жайгашкан жерди аныктоо",
+    geoLat: "Кеңдик", geoLon: "узундук",
+    infoDesc: "SaneUp колдонмосу жөнүндө.",
+    infoOfflineT: "Интернетсиз иштейт",
+    infoOfflineB: "Биринчи жардам жөнүндөгү бардык маалымат колдонмонун ичинде сакталат. Интернет аба ырайы божомолун жаңыртуу үчүн гана керек.",
+    infoSectT: "Бөлүмдөр",
+    infoSrcT: "Маалымат булагы",
+    infoSrcB: "Казакстан Республикасынын Биринчи жардам стандарты (Буйрук № KR DSM-269/2020).",
+    infoImpT: "Маанилүү",
+    infoImpB: "Колдонмо дарыгерлер келгенге чейин аракет кылууга жардам берет жана медициналык жардамды алмаштырбайт. Өмүргө коркунуч болсо, дароо 103 же 112 номерине чалыңыз.",
+    langTitle: "Тил",
+    weatherNotLoaded: " Божомол азырынча жүктөлгөн жок — интернетке туташыңыз.",
+    toastOnline: "Интернет пайда болду — аба ырайы божомолун жаңыртып жатам",
+    toastOffline: "Интернет жок — колдонмо иштей берет",
+    toastGeoSearch: "Жайгашкан жер аныкталууда...",
+    toastGeoOk: "Жайгашкан жер аныкталды",
+    toastGeoFail: "Жайгашкан жерди аныктоо мүмкүн болгон жок",
+    toastCallGeo: "Координаталар диспетчер үчүн даяр: ",
+    toastCallOffline: "Чалуу болууда. Жайгашкан жерди төмөндө кол менен күйгүзсөңүз болот.",
+    contentEnNote: "Бул тил үчүн жардам тексттери англис тилинде көрсөтүлгөн."
+  },
+  tr: {
+    appSub: "Sade bir dille ilk yardım. Acil durumda ne yapmalı.",
+    appTitle: "İlk Yardım",
+    online: "çevrimiçi", offline: "çevrimdışı",
+    mHelp: "Yardım", mHelpSub: "16 durum — ne yapmalı",
+    mLearn: "Öğren", mLearnSub: "Neden böyle",
+    mCall: "Ara", mCallSub: "Acil servisler",
+    mInfo: "Daha", mInfoSub: "Uygulama hakkında",
+    tabHome: "Ana", tabHelp: "Yardım", tabLearn: "Öğren", tabCall: "Ara",
+    back: "← Geri", backList: "← Listeye",
+    helpDesc: "Bir durum bulun veya listeden seçin.",
+    searchPh: "Yazın, örneğin: yanık, kanama, ısırık...",
+    noResults: "Aramanızla ilgili sonuç bulunamadı.",
+    tryOther: "Başka bir kelime deneyin.",
+    doSteps: "Ne yapmalı — adım adım",
+    dontDo: "Yapılmamalı",
+    whyTitle: "Neden böyle",
+    learnDesc: "İlk yardım neden böyle yapılır. Bir soruya dokunun.",
+    callDesc: "Bir servise dokunun — uygulama aramayı başlatır.",
+    callNote: "112 tek acil numaradır, bakiye veya SIM kart olmadan da çalışır.",
+    geoTitle: "Konum",
+    geoMyTitle: "Konumunuz",
+    geoOfflineMsg: "Uygulama ilk kez internetsiz açıldı, bu yüzden konum otomatik istenmedi. Koordinatları operatöre iletmek için elle açabilirsiniz.",
+    geoOkMsg: "Koordinatlar belirlendi ve operatör için gösterilecek.",
+    geoNoMsg: "Konum henüz belirlenmedi.",
+    geoBtn: "Konumu belirle",
+    geoLat: "Enlem", geoLon: "boylam",
+    infoDesc: "SaneUp uygulaması hakkında.",
+    infoOfflineT: "İnternetsiz çalışır",
+    infoOfflineB: "Tüm ilk yardım bilgileri uygulama içinde saklanır. İnternet yalnızca hava durumu tahminini güncellemek için gerekir.",
+    infoSectT: "Bölümler",
+    infoSrcT: "Bilgi kaynağı",
+    infoSrcB: "Kazakistan Cumhuriyeti İlk Yardım Standardı (Emir No. KR DSM-269/2020).",
+    infoImpT: "Önemli",
+    infoImpB: "Uygulama, doktorlar gelene kadar hareket etmenize yardımcı olur ve tıbbi bakımın yerini tutmaz. Hayati tehlike varsa hemen 103 veya 112'yi arayın.",
+    langTitle: "Dil",
+    weatherNotLoaded: " Tahmin henüz yüklenmedi — internete bağlanın.",
+    toastOnline: "İnternet geri geldi — hava durumu tahmini güncelleniyor",
+    toastOffline: "İnternet yok — uygulama çalışmaya devam ediyor",
+    toastGeoSearch: "Konum belirleniyor...",
+    toastGeoOk: "Konum belirlendi",
+    toastGeoFail: "Konum belirlenemedi",
+    toastCallGeo: "Koordinatlar operatör için hazır: ",
+    toastCallOffline: "Aranıyor. Konumu aşağıdan elle açabilirsiniz.",
+    contentEnNote: "Bu dil için yardım metinleri İngilizce gösterilir."
+  },
+  zh: {
+    appSub: "用简单的语言讲解急救。紧急情况下该怎么做。",
+    appTitle: "急救",
+    online: "在线", offline: "离线",
+    mHelp: "急救", mHelpSub: "16 种情况 — 怎么做",
+    mLearn: "学习", mLearnSub: "为什么这样做",
+    mCall: "呼叫", mCallSub: "紧急服务",
+    mInfo: "更多", mInfoSub: "关于应用",
+    tabHome: "主页", tabHelp: "急救", tabLearn: "学习", tabCall: "呼叫",
+    back: "← 返回", backList: "← 返回列表",
+    helpDesc: "查找一种情况或从列表中选择。",
+    searchPh: "输入，例如：烧伤、出血、咬伤……",
+    noResults: "未找到与查询相关的内容。",
+    tryOther: "请尝试其他词语。",
+    doSteps: "怎么做 — 分步说明",
+    dontDo: "不可以做",
+    whyTitle: "为什么这样做",
+    learnDesc: "为什么急救要这样进行。点击问题。",
+    callDesc: "点击服务 — 应用将开始呼叫。",
+    callNote: "112 是统一紧急号码，即使没有话费或 SIM 卡也能使用。",
+    geoTitle: "位置",
+    geoMyTitle: "您的位置",
+    geoOfflineMsg: "应用首次在无网络情况下打开，因此未自动请求位置。您可以手动开启，以便向调度员提供坐标。",
+    geoOkMsg: "已确定坐标，将显示给调度员。",
+    geoNoMsg: "尚未确定位置。",
+    geoBtn: "确定我的位置",
+    geoLat: "纬度", geoLon: "经度",
+    infoDesc: "关于 SaneUp 应用。",
+    infoOfflineT: "无需网络即可使用",
+    infoOfflineB: "所有急救信息都存储在应用内。仅在更新天气预报时需要网络。",
+    infoSectT: "栏目",
+    infoSrcT: "信息来源",
+    infoSrcB: "哈萨克斯坦共和国急救标准（命令 No. KR DSM-269/2020）。",
+    infoImpT: "重要",
+    infoImpB: "本应用帮助您在医生到达前采取行动，不能替代医疗救治。如有生命危险，请立即拨打 103 或 112。",
+    langTitle: "语言",
+    weatherNotLoaded: " 预报尚未加载 — 请连接网络。",
+    toastOnline: "网络已恢复 — 正在更新天气预报",
+    toastOffline: "没有网络 — 应用继续运行",
+    toastGeoSearch: "正在确定位置……",
+    toastGeoOk: "已确定位置",
+    toastGeoFail: "无法确定位置",
+    toastCallGeo: "坐标已准备好提供给调度员：",
+    toastCallOffline: "正在呼叫。您可以在下方手动开启位置。",
+    contentEnNote: "此语言的急救文本以英文显示。"
+  },
+  es: {
+    appSub: "Primeros auxilios en lenguaje sencillo. Qué hacer en una emergencia.",
+    appTitle: "Primeros auxilios",
+    online: "en línea", offline: "sin conexión",
+    mHelp: "Ayuda", mHelpSub: "16 situaciones — qué hacer",
+    mLearn: "Aprender", mLearnSub: "Por qué se hace así",
+    mCall: "Llamar", mCallSub: "Servicios de emergencia",
+    mInfo: "Más", mInfoSub: "Sobre la app",
+    tabHome: "Inicio", tabHelp: "Ayuda", tabLearn: "Aprender", tabCall: "Llamar",
+    back: "← Atrás", backList: "← A la lista",
+    helpDesc: "Busque una situación o elija de la lista.",
+    searchPh: "Escriba, p. ej.: quemadura, sangrado, mordedura...",
+    noResults: "No se encontró nada para su búsqueda.",
+    tryOther: "Pruebe con otra palabra.",
+    doSteps: "Qué hacer — paso a paso",
+    dontDo: "No se debe hacer",
+    whyTitle: "Por qué se hace así",
+    learnDesc: "Por qué los primeros auxilios se dan así. Toque una pregunta.",
+    callDesc: "Toque un servicio — la app iniciará la llamada.",
+    callNote: "112 es el número único de emergencia, funciona incluso sin saldo ni tarjeta SIM.",
+    geoTitle: "Ubicación",
+    geoMyTitle: "Su ubicación",
+    geoOfflineMsg: "La app se abrió por primera vez sin internet, por eso la ubicación no se solicitó automáticamente. Puede activarla manualmente para compartir las coordenadas con el operador.",
+    geoOkMsg: "Coordenadas detectadas y se mostrarán para el operador.",
+    geoNoMsg: "Ubicación aún no detectada.",
+    geoBtn: "Detectar mi ubicación",
+    geoLat: "Latitud", geoLon: "longitud",
+    infoDesc: "Sobre la app SaneUp.",
+    infoOfflineT: "Funciona sin internet",
+    infoOfflineB: "Toda la información de primeros auxilios se guarda dentro de la app. Internet solo se necesita para actualizar el pronóstico del tiempo.",
+    infoSectT: "Secciones",
+    infoSrcT: "Fuente de información",
+    infoSrcB: "Norma de Primeros Auxilios de la República de Kazajistán (Orden N.º KR DSM-269/2020).",
+    infoImpT: "Importante",
+    infoImpB: "La app ayuda a actuar antes de que lleguen los médicos y no sustituye la atención médica. Si hay peligro de vida, llame de inmediato al 103 o al 112.",
+    langTitle: "Idioma",
+    weatherNotLoaded: " El pronóstico aún no se ha cargado — conéctese a internet.",
+    toastOnline: "Hay internet — actualizando el pronóstico del tiempo",
+    toastOffline: "Sin internet — la app sigue funcionando",
+    toastGeoSearch: "Detectando ubicación...",
+    toastGeoOk: "Ubicación detectada",
+    toastGeoFail: "No se pudo detectar la ubicación",
+    toastCallGeo: "Coordenadas listas para el operador: ",
+    toastCallOffline: "Llamando. Puede activar la ubicación manualmente abajo.",
+    contentEnNote: "Para este idioma, los textos de ayuda se muestran en inglés."
+  },
+  ar: {
+    appSub: "الإسعافات الأولية بلغة بسيطة. ماذا تفعل في حالة الطوارئ.",
+    appTitle: "الإسعافات الأولية",
+    online: "متصل", offline: "غير متصل",
+    mHelp: "مساعدة", mHelpSub: "16 حالة — ماذا تفعل",
+    mLearn: "تعلّم", mLearnSub: "لماذا بهذه الطريقة",
+    mCall: "اتصال", mCallSub: "خدمات الطوارئ",
+    mInfo: "المزيد", mInfoSub: "حول التطبيق",
+    tabHome: "الرئيسية", tabHelp: "مساعدة", tabLearn: "تعلّم", tabCall: "اتصال",
+    back: "→ رجوع", backList: "→ إلى القائمة",
+    helpDesc: "ابحث عن حالة أو اختر من القائمة.",
+    searchPh: "اكتب، مثلاً: حرق، نزيف، لدغة...",
+    noResults: "لم يتم العثور على شيء لطلبك.",
+    tryOther: "جرّب كلمة أخرى.",
+    doSteps: "ماذا تفعل — خطوة بخطوة",
+    dontDo: "ما يجب تجنّبه",
+    whyTitle: "لماذا بهذه الطريقة",
+    learnDesc: "لماذا تُقدَّم الإسعافات الأولية بهذه الطريقة. اضغط على سؤال.",
+    callDesc: "اضغط على خدمة — سيبدأ التطبيق الاتصال.",
+    callNote: "112 هو رقم الطوارئ الموحّد، ويعمل حتى بدون رصيد أو شريحة SIM.",
+    geoTitle: "الموقع",
+    geoMyTitle: "موقعك",
+    geoOfflineMsg: "فُتح التطبيق لأول مرة بدون إنترنت، لذلك لم يُطلب الموقع تلقائياً. يمكنك تفعيله يدوياً لمشاركة الإحداثيات مع عامل الطوارئ.",
+    geoOkMsg: "تم تحديد الإحداثيات وستُعرض لعامل الطوارئ.",
+    geoNoMsg: "لم يُحدَّد الموقع بعد.",
+    geoBtn: "تحديد موقعي",
+    geoLat: "خط العرض", geoLon: "خط الطول",
+    infoDesc: "حول تطبيق SaneUp.",
+    infoOfflineT: "يعمل بدون إنترنت",
+    infoOfflineB: "جميع معلومات الإسعافات الأولية محفوظة داخل التطبيق. الإنترنت مطلوب فقط لتحديث توقعات الطقس.",
+    infoSectT: "الأقسام",
+    infoSrcT: "مصدر المعلومات",
+    infoSrcB: "معيار الإسعافات الأولية لجمهورية كازاخستان (الأمر رقم KR DSM-269/2020).",
+    infoImpT: "مهم",
+    infoImpB: "يساعدك التطبيق على التصرّف قبل وصول الأطباء ولا يحل محل الرعاية الطبية. إذا كانت الحياة في خطر، اتصل فوراً بالرقم 103 أو 112.",
+    langTitle: "اللغة",
+    weatherNotLoaded: " لم تُحمَّل التوقعات بعد — اتصل بالإنترنت.",
+    toastOnline: "عاد الإنترنت — يجري تحديث توقعات الطقس",
+    toastOffline: "لا يوجد إنترنت — التطبيق يواصل العمل",
+    toastGeoSearch: "جارٍ تحديد الموقع...",
+    toastGeoOk: "تم تحديد الموقع",
+    toastGeoFail: "تعذّر تحديد الموقع",
+    toastCallGeo: "الإحداثيات جاهزة لعامل الطوارئ: ",
+    toastCallOffline: "جارٍ الاتصال. يمكنك تفعيل الموقع يدوياً بالأسفل.",
+    contentEnNote: "لهذه اللغة، تُعرض نصوص المساعدة بالإنجليزية."
+  },
+  fr: {
+    appSub: "Les premiers secours en langage simple. Que faire en cas d'urgence.",
+    appTitle: "Premiers secours",
+    online: "en ligne", offline: "hors ligne",
+    mHelp: "Aide", mHelpSub: "16 situations — que faire",
+    mLearn: "Apprendre", mLearnSub: "Pourquoi ainsi",
+    mCall: "Appeler", mCallSub: "Services d'urgence",
+    mInfo: "Plus", mInfoSub: "À propos de l'app",
+    tabHome: "Accueil", tabHelp: "Aide", tabLearn: "Apprendre", tabCall: "Appeler",
+    back: "← Retour", backList: "← À la liste",
+    helpDesc: "Trouvez une situation ou choisissez dans la liste.",
+    searchPh: "Tapez, p. ex. : brûlure, saignement, morsure...",
+    noResults: "Aucun résultat pour votre recherche.",
+    tryOther: "Essayez un autre mot.",
+    doSteps: "Que faire — étape par étape",
+    dontDo: "À ne pas faire",
+    whyTitle: "Pourquoi ainsi",
+    learnDesc: "Pourquoi les premiers secours se donnent ainsi. Touchez une question.",
+    callDesc: "Touchez un service — l'app lancera l'appel.",
+    callNote: "112 est le numéro d'urgence unique, il fonctionne même sans crédit ni carte SIM.",
+    geoTitle: "Localisation",
+    geoMyTitle: "Votre localisation",
+    geoOfflineMsg: "L'app a été ouverte pour la première fois sans internet, la localisation n'a donc pas été demandée automatiquement. Vous pouvez l'activer manuellement pour communiquer les coordonnées au régulateur.",
+    geoOkMsg: "Coordonnées détectées et affichées pour le régulateur.",
+    geoNoMsg: "Localisation pas encore détectée.",
+    geoBtn: "Détecter ma localisation",
+    geoLat: "Latitude", geoLon: "longitude",
+    infoDesc: "À propos de l'app SaneUp.",
+    infoOfflineT: "Fonctionne sans internet",
+    infoOfflineB: "Toutes les informations de premiers secours sont stockées dans l'app. Internet n'est nécessaire que pour mettre à jour les prévisions météo.",
+    infoSectT: "Sections",
+    infoSrcT: "Source d'information",
+    infoSrcB: "Norme de premiers secours de la République du Kazakhstan (Arrêté n° KR DSM-269/2020).",
+    infoImpT: "Important",
+    infoImpB: "L'app aide à agir avant l'arrivée des médecins et ne remplace pas les soins médicaux. En cas de danger vital, appelez immédiatement le 103 ou le 112.",
+    langTitle: "Langue",
+    weatherNotLoaded: " Prévisions pas encore chargées — connectez-vous à internet.",
+    toastOnline: "Internet est revenu — mise à jour des prévisions météo",
+    toastOffline: "Pas d'internet — l'app continue de fonctionner",
+    toastGeoSearch: "Détection de la localisation...",
+    toastGeoOk: "Localisation détectée",
+    toastGeoFail: "Impossible de détecter la localisation",
+    toastCallGeo: "Coordonnées prêtes pour le régulateur : ",
+    toastCallOffline: "Appel en cours. Vous pouvez activer la localisation manuellement ci-dessous.",
+    contentEnNote: "Pour cette langue, les textes d'aide sont affichés en anglais."
+  },
+  de: {
+    appSub: "Erste Hilfe in einfacher Sprache. Was im Notfall zu tun ist.",
+    appTitle: "Erste Hilfe",
+    online: "online", offline: "offline",
+    mHelp: "Hilfe", mHelpSub: "16 Situationen — was tun",
+    mLearn: "Lernen", mLearnSub: "Warum so",
+    mCall: "Anrufen", mCallSub: "Notdienste",
+    mInfo: "Mehr", mInfoSub: "Über die App",
+    tabHome: "Start", tabHelp: "Hilfe", tabLearn: "Lernen", tabCall: "Anrufen",
+    back: "← Zurück", backList: "← Zur Liste",
+    helpDesc: "Finden Sie eine Situation oder wählen Sie aus der Liste.",
+    searchPh: "Tippen, z. B.: Verbrennung, Blutung, Biss...",
+    noResults: "Nichts zu Ihrer Anfrage gefunden.",
+    tryOther: "Versuchen Sie ein anderes Wort.",
+    doSteps: "Was tun — Schritt für Schritt",
+    dontDo: "Nicht tun",
+    whyTitle: "Warum so",
+    learnDesc: "Warum Erste Hilfe so geleistet wird. Tippen Sie auf eine Frage.",
+    callDesc: "Tippen Sie auf einen Dienst — die App startet den Anruf.",
+    callNote: "112 ist die einheitliche Notrufnummer, sie funktioniert auch ohne Guthaben oder SIM-Karte.",
+    geoTitle: "Standort",
+    geoMyTitle: "Ihr Standort",
+    geoOfflineMsg: "Die App wurde zum ersten Mal ohne Internet geöffnet, daher wurde der Standort nicht automatisch abgefragt. Sie können ihn manuell aktivieren, um die Koordinaten an die Leitstelle zu übermitteln.",
+    geoOkMsg: "Koordinaten erkannt und werden für die Leitstelle angezeigt.",
+    geoNoMsg: "Standort noch nicht erkannt.",
+    geoBtn: "Standort ermitteln",
+    geoLat: "Breite", geoLon: "Länge",
+    infoDesc: "Über die App SaneUp.",
+    infoOfflineT: "Funktioniert ohne Internet",
+    infoOfflineB: "Alle Erste-Hilfe-Informationen sind in der App gespeichert. Internet wird nur zum Aktualisieren der Wettervorhersage benötigt.",
+    infoSectT: "Bereiche",
+    infoSrcT: "Informationsquelle",
+    infoSrcB: "Erste-Hilfe-Standard der Republik Kasachstan (Erlass Nr. KR DSM-269/2020).",
+    infoImpT: "Wichtig",
+    infoImpB: "Die App hilft, vor dem Eintreffen der Ärzte zu handeln, und ersetzt keine medizinische Versorgung. Bei Lebensgefahr sofort 103 oder 112 anrufen.",
+    langTitle: "Sprache",
+    weatherNotLoaded: " Vorhersage noch nicht geladen — verbinden Sie sich mit dem Internet.",
+    toastOnline: "Internet ist wieder da — Wettervorhersage wird aktualisiert",
+    toastOffline: "Kein Internet — die App funktioniert weiter",
+    toastGeoSearch: "Standort wird ermittelt...",
+    toastGeoOk: "Standort ermittelt",
+    toastGeoFail: "Standort konnte nicht ermittelt werden",
+    toastCallGeo: "Koordinaten für die Leitstelle bereit: ",
+    toastCallOffline: "Anruf läuft. Sie können den Standort unten manuell aktivieren.",
+    contentEnNote: "Für diese Sprache werden die Hilfetexte auf Englisch angezeigt."
+  }
+};
+
+
+/* ============================================================
+   SaneUp — МЕДИЦИНСКИЙ КОНТЕНТ: KK + EN
+   Полный перевод 16 состояний и обучения.
+   Источник: Стандарт оказания первой помощи РК.
+   ============================================================ */
+
+/* ---------- КАЗАХСКИЙ ---------- */
+const HELP_KK = {
+  ozhog: {
+    name: "Күйік",
+    when: "Термиялық күйік: от, қайнаған су, бу, ыстық заттардың әсері.",
+    why: "Сумен кемінде 15 минут салқындату тіндердің тереңге қызуын тоқтатады және зақым ауданы мен тереңдігін азайтады. Ылғал таңғыш жараны инфекциядан және құрғаудан қорғайды. Қабыршақты кесіп алуға және тиюге болмайды — бұл терең күйік, кез келген зақым жарақатты күшейтеді.",
+    steps: [
+      "Қауіпті жойыңыз. Мүмкін болмаса — 103 (112) нөміріне қоңырау шалыңыз.",
+      "Сана мен тыныс алуды тексеріңіз. Олар болмаса — базалық реанимация бастаңыз және 103 (112) шақырыңыз.",
+      "Теріде қызару, ісіну немесе көпіршік болса — суық сумен кемінде 15 минут салқындатыңыз.",
+      "Күйік жарасының жиегі бойынша киімді кесіңіз (жабысқанын жұлмаңыз).",
+      "Жараға кең, таза және ылғал таңғыш салыңыз.",
+      "Сұр немесе қара қабыршақ болса: жара жиегі бойынша киімді кесіп, ылғал таңғыш салыңыз, ылғалды сақтау үшін полиэтилен пакет қолданыңыз.",
+      "Зардап шеккенге ыңғайлы жағдай беріп, жедел жәрдем келгенге дейін жағдайын бақылаңыз."
+    ],
+    donts: [
+      "Пайда болған қабыршақты кесуге және тиюге болмайды.",
+      "Жараға жабысқан киімді жұлмаңыз.",
+      "Көпіршіктерді жаруға болмайды."
+    ]
+  },
+  krov: {
+    name: "Сыртқы қан кету",
+    when: "Кез келген сыртқы қан кету: бас, мұрын, мойын, кеуде, іш, аяқ-қол.",
+    why: "Тікелей қысым және қысқыш таңғыш зақымдалған тамырды басып, қанның ұюына мүмкіндік береді. Аяқ-қолға бұрауыш жараның жоғарғы жағына салынады, себебі қан аяқ-қолға дене ортасынан келеді. Бөгде заттарды алуға болмайды — олар тамырды бітеп тұр, оларды алу қатты қан кетуге әкеледі.",
+    steps: [
+      "103 (112) шақырыңыз.",
+      "Бас қан кетуі: бірнеше қабат бинттен қысқыш таңғыш салыңыз, зардап шеккенді ыңғайлы отырғызыңыз.",
+      "Мұрын қан кетуі: мұрын қанаттарын саусақпен 10–15 минут қысыңыз, мұрын үстіне сүлгі арқылы суық қойыңыз.",
+      "Мойын қан кетуі: қан кету орнын саусақпен тез басыңыз, бірнеше қабат бинт салып, қолмен басып тұрыңыз.",
+      "Іш немесе кеуде қан кетуі: бірнеше қабат бинттен таңғыш салыңыз.",
+      "Аяқ-қол қан кетуі: жараның жоғарғы жағына бұрауыш салыңыз (белдік, галстук, мата), мата астына қысқа таяқ салып, қан тоқтағанша 2–3 рет бұраңыз, содан кейін қысқыш таңғыш салыңыз."
+    ],
+    donts: [
+      "Мұрын қан кеткенде басты артқа шалқайтпаңыз.",
+      "Мұрын қан кеткенде мұрынды сіңбіруге және жатуға болмайды.",
+      "Жарада бөгде зат болса — тиюге және алуға тырыспаңыз."
+    ]
+  },
+  soznanie: {
+    name: "Сана жоқ",
+    when: "Зардап шеккен есінен танған, бірақ тыныс алуда.",
+    why: "Қалпына келтіру (бүйір) қалпы тілдің тыныс жолын жабуына және құсық массаларының өкпеге түсуіне жол бермейді. Бас артқа қаратылады, осылайша тыныс жолдары ашық қалады. Зардап шеккенді қараусыз қалдыруға болмайды, себебі тыныс алу кез келген сәтте тоқтауы мүмкін.",
+    steps: [
+      "Өзіңіз бен зардап шеккенге қауіпті жойыңыз.",
+      "Зардап шеккеннен көзілдірікті алыңыз, егер ол киіп жүрсе.",
+      "Қасына тізерлеп отырыңыз, зардап шеккеннің аяқтары түзу болуы керек.",
+      "Сізге жақын қолды денеге тік бұрышпен қойып, шынтақтан бүгіп, алақанды жоғары қаратыңыз.",
+      "Алыс қолды кеуде арқылы салып, алақанның сыртын бетке тигізіңіз.",
+      "Алыс аяқты тізеден жоғары ұстап, жоғары көтеріңіз, табан жерде қалады.",
+      "Беттегі қолды ұстай отырып, алыс аяққа басып, зардап шеккенді өзіңізге қарай бүйіріне аударыңыз.",
+      "Сан мен тізені тік бұрышпен бүгіп, тыныс жолдарын ашу үшін басты артқа қаратыңыз.",
+      "103 (112) шақырыңыз, жедел жәрдем келгенге дейін тыныс алуды үнемі тексеріңіз."
+    ],
+    donts: [
+      "Зардап шеккенді қараусыз қалдырмаңыз.",
+      "Оны тік қалыпқа көтермеңіз."
+    ]
+  },
+  reanimaciya: {
+    name: "Тыныс алу тоқтауы",
+    when: "Зардап шеккен есінен танған және тыныс алмайды.",
+    why: "Жүректің жанама массажы жүрек жұмыс істемей тұрғанда қанды дене бойымен жасанды түрде айдап, миды оттегімен қоректендіреді. Балалар мен нәрестелерде тереңдік аз — кеуде өлшеміне байланысты, ал үрлеуден бастайды, себебі оларда көбіне ауа жетіспеушілігі себеп болады.",
+    steps: [
+      "Қауіпті жойып, 103 (112) шақырыңыз және жедел жәрдем келгенге дейін жүректің жанама массажын үздіксіз бастаңыз.",
+      "12 жастан асқан ересек: кеуде ортасына алақан негізімен (екінші алақан үстінде) 5–6 см тереңдікке 30 рет басу және аузына 2 рет үрлеу.",
+      "1–12 жас бала: алдымен 5 рет үрлеу (ерінмен аузын қаусыру, үрлеу 1 секунд), содан кейін кеуде ортасына 4–5 см тереңдікке 30 рет басу және 2 рет үрлеу.",
+      "0–12 ай нәресте: 5 рет үрлеу (ерінмен ауыз бен мұрынды бірге қаусыру), кеуденің үштен бір тереңдігіне екі саусақпен 30 рет басу және 2 рет үрлеу.",
+      "Автоматты дефибриллятор болса, құтқару мүмкіндігін арттыру үшін қолданыңыз.",
+      "Тыныс алу мен жүрек соғуы қалпына келсе — зардап шеккенді бүйір қалпына аударыңыз.",
+      "Жедел жәрдем келгенге дейін қараусыз қалдырмаңыз."
+    ],
+    donts: [
+      "Жүрек массажын қажетсіз үзбеңіз.",
+      "Зардап шеккенді қараусыз қалдырмаңыз."
+    ]
+  },
+  inorodnoe: {
+    name: "Тұншықты (бөгде зат)",
+    when: "Жоғарғы тыныс жолдарындағы бөгде зат, зардап шеккен тұншықты.",
+    why: "Адам жөтелсе — жөтел заттың өзін шығарады, кедергі жасауға болмайды. Жауырын арасына соққы және іш қысуы өкпеде ауаның күрт қысымын жасап, кептелген затты ұшырып шығарады. Жүкті әйелдер мен үлкен ішті адамдарда іш қысуы кеудеге басумен ауыстырылады.",
+    steps: [
+      "Зардап шеккен сөйлей, жөтеле, жылай алса — жөтелуге көмектесіңіз, кедергі жасамаңыз, арқаға ұрмаңыз, жағдайды бақылаңыз.",
+      "Сөйлей алмаса — қолмен жауырын арасына 5-ке дейін сырғымалы соққы жасаңыз.",
+      "Көмектеспесе — артынан тұрып, қолмен қаусырыңыз, бір қолды жұдырыққа түйіп, кіндік пен кеуде арасына бас бармақ жағымен қойыңыз.",
+      "Екінші алақанды жұдырыққа қойып, ішке күрт күшті итерулер жасаңыз.",
+      "Кезектестіріңіз: 5 рет іш қысуы, содан кейін 5 рет арқаға соққы — жөтел пайда болғанша.",
+      "Жүкті әйел немесе үлкен ішті адам: іш қысуының орнына — кеуде ортасына 5 рет басу, көмектеспесе жауырын соққысын қайталаңыз.",
+      "Зардап шеккен есінен танса — базалық реанимацияға көшіңіз."
+    ],
+    donts: [
+      "Адам жөтеліп, сөйлей алса — оны арқаға ұрмаңыз.",
+      "Зардап шеккенге өзі жөтелуге кедергі жасамаңыз."
+    ]
+  },
+  travma: {
+    name: "Жарақат",
+    when: "Дене аймақтарының жарақаттары: ашық және жабық, сынықтар, омыртқа жарақаты.",
+    why: "Жабық жарақатта суық тамырларды тарылтып, ісіну мен ауырсынуды азайтады. Аяқ-қолды бекіту зақымдалған сүйектердің жылжуына және тіндерді жарақаттауына жол бермейді. Омыртқа жарақатында бас денемен бір сызықта ұсталады, себебі кез келген жылжу жұлынды зақымдауы мүмкін.",
+    steps: [
+      "Орын қауіпсіз болса, зардап шеккен есінде және тыныс алуда болса — 103 (112) шақырыңыз.",
+      "Жарақат түрін анықтаңыз: ашық немесе жабық.",
+      "Жабық жарақат: мата арқылы 10–15 минут суық қойыңыз, аяқ-қолды қолдағы құралдармен бекітіңіз, ыңғайлы қалыпқа аударыңыз.",
+      "Ашық жарақат: қан кетсе таза сумен жараны жуыңыз, бірнеше қабат бинт салыңыз, аяқ-қолды бекітіңіз.",
+      "Омыртқа жарақатында басты денемен бір сызықта бекітіп, үнемі қолмен ұстаңыз.",
+      "Ішкі мүшелер көрінсе — ылғал матамен, содан кейін полиэтиленмен жабып, қатты таңғыш салыңыз.",
+      "Қатты қан кетсе жараның жоғарғы жағына бұрауыш салыңыз.",
+      "Сынық болса зардап шеккенді жедел жәрдем келгенге дейін бастапқы қалпында бекітіңіз."
+    ],
+    donts: [
+      "Кеуде немесе іштен бөгде заттарды алмаңыз.",
+      "Омыртқа сынуы күмәнді болса сүйектерді түзетпеңіз және қозғалтпаңыз."
+    ]
+  },
+  obmorozhenie: {
+    name: "Үсу",
+    when: "Үсу және төмен температураның басқа әсерлері.",
+    why: "Біртіндеп жылыту тіндердегі қан айналымын күрт зақымсыз қалпына келтіреді. Үсуде уқалау, май және ыстық заттар қауіпті — олар тоңған тіндерді жарақаттайды және күйік тудыруы мүмкін, себебі сезімталдық төмен. Алкоголь тері тамырларын кеңейтіп, жылу жоғалтуды күшейтеді.",
+    steps: [
+      "Зардап шеккен есінде және тыныс алуда болса — 103 (112) шақырыңыз. Болмаса — базалық реанимация және 103 (112) шақыру.",
+      "Зардап шеккенді жылы бөлмеге ауыстырыңыз.",
+      "Зақымдалған аймақтан киім мен аяқ киімді абайлап шешіңіз.",
+      "Жылы сусын беріңіз.",
+      "Зақымдалған дене бөлігін біртіндеп жылытыңыз.",
+      "Зақымдалған жерлерге қолдағы құралдардан таңғыш салыңыз.",
+      "Жедел жәрдем келгенге дейін жағдайды бақылаңыз."
+    ],
+    donts: [
+      "Зақымдалған жерлерді уқаламаңыз, май, спирт жақпаңыз.",
+      "Ыстық заттарды (жылытқыш) тигізбеңіз.",
+      "Алкоголь ішуге болмайды."
+    ]
+  },
+  otravlenie: {
+    name: "Улану",
+    when: "Улану: у ауыз, тыныс жолдары немесе тері арқылы түскен.",
+    why: "Көп су ішу асқазандағы уды сұйылтады. Бүйір қалпы құсқанда тұншығуға жол бермейді. Мұнай өнімдерімен, қышқылдармен және сілтілермен уланғанда құсуды тудырмайды — улы заттың қайта өтуі өңеш пен тыныс жолдарын күйдіреді. Белсендірілген көмір ішектегі уды байланыстырады.",
+    steps: [
+      "Зардап шеккен есінде және тыныс алуда болса — 103 (112) шақырыңыз. Болмаса — базалық реанимация және 103 (112) шақыру.",
+      "У ауыз арқылы түссе: көп су ішкізіңіз, құсықтан тұншықпауы үшін бүйір қалпына аударыңыз.",
+      "У тыныс жолдары арқылы түссе: зардап шеккенді таза ауаға қауіпсіз жерге шығарыңыз, ыңғайлы қалып беріп, қысатын киімнен босатыңыз.",
+      "У тері немесе кілегей қабық арқылы түссе: бетті улы заттан қолдағы құралдармен (бинт) тазалаңыз, теріні немесе кілегей қабықты сумен жуыңыз.",
+      "Қажет болса адсорбциялаушы препараттар (белсендірілген көмір) беріңіз.",
+      "Жедел жәрдем келгенге дейін жағдайды бақылаңыз."
+    ],
+    donts: [
+      "Мұнай өнімдерімен, қышқылдармен, сілтімен уланғанда құсуды тудырмаңыз.",
+      "Мұндай уланғанда іш жүргізетін дәрі бермеңіз."
+    ]
+  },
+  sudorogi: {
+    name: "Құрысу",
+    when: "Зардап шеккенде құрысу ұстамасы бар.",
+    why: "Ұстаманы күшпен тоқтатуға болмайды — бұл пайдасыз және қауіпті: сүйектерді сындыруға немесе буындарды шығаруға болады. Қауіпті заттарды алып, бас астына жұмсақ зат қояды, осылайша адам құрысу кезінде жарақаттанбайды. Ұстамадан кейін бүйір қалпы тыныс алуды қорғайды.",
+    steps: [
+      "103 (112) шақырыңыз.",
+      "Ұстаманы тоқтатуға тырыспаңыз және зардап шеккенді күшпен ұстамаңыз.",
+      "Жарақаттауы мүмкін жанындағы заттарды алыңыз.",
+      "Бас астына жұмсақ жастық немесе кез келген қолдағы зат қойыңыз.",
+      "Құрысу тоқтап, зардап шеккен есінде болса — күрт қозғалысқа жол бермей, жағдайды бақылаңыз.",
+      "Құрысу тоқтамаса, зардап шеккен есінен танған, бірақ тыныс алуда болса — бүйір қалпына аударыңыз.",
+      "Сана мен тыныс жоқ болса — жедел жәрдем келгенге дейін базалық реанимация жасаңыз."
+    ],
+    donts: [
+      "Ұстаманы күшпен тоқтатуға тырыспаңыз.",
+      "Зардап шеккенді күшпен ұстамаңыз.",
+      "Аузына ештеңе салмаңыз."
+    ]
+  },
+  ukus: {
+    name: "Шағу",
+    when: "Жануарлардың, жыландардың, жәндіктердің шағуы.",
+    why: "Жараны сумен жуу удың бір бөлігін және кірді кетіреді. Суық удың таралуын баяулатып, ісінуді азайтады. Жылан уын соруға немесе жараны кесуге болмайды — бұл уды кетірмейді, бірақ инфекция мен қан жоғалтуды қосады. Жылан шаққанда бұрауыш қауіпті — ол тіндердің зақымын күшейтеді.",
+    steps: [
+      "Қауіпті жойыңыз. Мүмкін болмаса — 103 (112) шақырыңыз.",
+      "Орын қауіпсіз және зардап шеккен есінде, тыныс алуда болса — 103 (112) шақырыңыз.",
+      "Денедегі шағу орнын анықтаңыз.",
+      "Қан кетсе: жараны сумен жуыңыз, бинттен қысқыш таңғыш салыңыз, жағдайды бақылаңыз.",
+      "Қан кетпесе: жараны сумен жуып, шағу орнына суық қойыңыз.",
+      "Ара немесе бал арасы шаққанда шанышқыны абайлап алыңыз.",
+      "Шағу орнында ісіну болса суық компресс салыңыз."
+    ],
+    donts: [
+      "Улы жылан шаққанда уды соруға болмайды.",
+      "Жараны кесуге болмайды.",
+      "Жылан шаққанда бұрауыш қолдануға болмайды."
+    ]
+  },
+  obmorok: {
+    name: "Естен тану",
+    when: "Зардап шеккен кенеттен есінен танды (естен тану).",
+    why: "Көтерілген аяқтар миға қан ағынын күшейтеді — естен тану көбіне миды қанмен қамтудың уақытша жетіспеушілігінен болады. Таза ауа мен ағытылған киім тыныс алуды жеңілдетеді. Адамды тік көтеруге болмайды — қан қайтадан мидан кетіп, естен тану қайталанады.",
+    steps: [
+      "Зардап шеккен тыныс алса — 103 (112) шақырыңыз. Тыныс алмаса — базалық реанимация және 103 (112) шақыру.",
+      "Арқасына жатқызып, аяқтарын көтеріңіз.",
+      "Қысатын киім бөліктерін ағытыңыз.",
+      "Таза ауаның келуін қамтамасыз етіңіз.",
+      "Бетін салқын сумен сүртіңіз немесе маңдайына ылғал сүлгі қойыңыз.",
+      "Құсқанда басты бүйірге бұрыңыз немесе бүйір қалпына аударыңыз.",
+      "Жедел жәрдем келгенге дейін жағдайды бақылаңыз."
+    ],
+    donts: [
+      "Зардап шеккенді тік қалыпқа көтермеңіз."
+    ]
+  },
+  "bol-grud": {
+    name: "Кеудедегі ауырсыну",
+    when: "Қолға немесе мойынға берілетін кеудедегі қатты, күйдіретін ауырсыну.",
+    why: "Мұндай ауырсыну инфаркт белгісі болуы мүмкін. Жүктемені тоқтату және ыңғайлы қалып жүректің оттегіге қажеттілігін азайтады. Ағытылған киім тыныс алуды жеңілдетеді. Жедел жәрдем дереу шақырылады, себебі инфарктта әр минут маңызды.",
+    steps: [
+      "103 (112) шақырыңыз.",
+      "Қажет болса дене белсенділігін тоқтатыңыз.",
+      "Зардап шеккенді ыңғайлы отырғызыңыз.",
+      "Қысатын киімді ағытыңыз.",
+      "Жедел жәрдем келгенге дейін жағдайды бақылаңыз.",
+      "Қажет болса базалық реанимация жасаңыз."
+    ],
+    donts: [
+      "Зардап шеккенді қозғалуға немесе жүруге мәжбүрлемеңіз.",
+      "Қараусыз қалдырмаңыз."
+    ]
+  },
+  vosstanov: {
+    name: "Бүйір қалпы",
+    when: "Зардап шеккен есінен танған, бірақ тыныс алуда — қауіпсіз қалыпқа аудару керек.",
+    why: "Қалпына келтіру (бүйір) қалпы тыныс жолдарын ашық ұстап, құсық массаларының немесе тілдің тыныс алуды жабуына жол бермейді. Бұл — тыныс алу сақталған кез келген есінен тану жағдайында қолданылатын базалық әдіс.",
+    steps: [
+      "Зардап шеккеннен көзілдірікті алыңыз, егер ол киіп жүрсе.",
+      "Қасына тізерлеп отырыңыз, зардап шеккеннің аяқтары түзу.",
+      "Жақын қолды денеге тік бұрышпен қойып, шынтақтан алақанмен жоғары бүгіңіз.",
+      "Алыс қолды кеуде арқылы салып, алақан сыртын бетке тигізіңіз.",
+      "Алыс аяқты тізеден жоғары ұстап көтеріңіз, табан жерде қалады.",
+      "Беттегі қолды ұстай отырып, алыс аяққа басып, зардап шеккенді өзіңізге бүйіріне аударыңыз.",
+      "Сан мен тізені тік бұрышпен бүгіп, басты артқа қаратыңыз.",
+      "103 (112) жедел жәрдем келгенге дейін тыныс алуды үнемі тексеріңіз."
+    ],
+    donts: [
+      "Зардап шеккенді қараусыз қалдырмаңыз."
+    ]
+  },
+  transport: {
+    name: "Тасымалдау",
+    when: "Жедел жәрдем келгенге дейін зардап шеккенді жылжыту қажет.",
+    why: "Тасымалдау кезіндегі қалып жарақатқа байланысты: ол зақымдалған дене бөліктерінің жылжуына жол бермей, тыныс алуды қорғауы керек. Жылжыту кезіндегі дұрыс емес қалып жарақатты күшейтуі мүмкін, әсіресе омыртқа зақымдалғанда.",
+    steps: [
+      "Есінсіз: қалпына келтіру (бүйір) қалпында тасымалдаңыз.",
+      "Бас пен мойын жарақаты: арқада, бас айналасына біліктер және мойын астына жұмсақ білік.",
+      "Омыртқа жарақаты: қатты зембілде арқада мойын, бел және тізе астына біліктермен — немесе жұмсақ зембілде ішке жатқызып.",
+      "Кеуде жарақаты: тізе астына білікпен жартылай отырғызып немесе зақымдалған жағына бүйір қалпында.",
+      "Іш жарақаты: бүйір қалпында.",
+      "Жамбас жарақаты: арқада тізе астына білікпен және аяқтары сәл ажыратылып.",
+      "Сана мен тыныс жоқ болса — базалық реанимация жасап, 103 (112) шақырыңыз."
+    ],
+    donts: [
+      "Омыртқа жарақатында бекітусіз жылжытпаңыз.",
+      "Қажетсіз тасымалдамаңыз — мүмкін болса жедел жәрдемді күтіңіз."
+    ]
+  },
+  ocenka: {
+    name: "Жағдайды бағалау",
+    when: "Көмек көрсетуге дейінгі оқиға орнындағы алғашқы әрекеттер.",
+    why: "Көмектен бұрын орынның қауіпсіз екеніне көз жеткізу керек — әйтпесе құтқарушы өзі зардап шегеді. Сана, тыныс және қан кетуді бағалау бірінші кезекте не істеу керектігін анықтайды: қанды тоқтату, реанимация бастау немесе бүйір қалпына аудару.",
+    steps: [
+      "Өз өміріңіз бен денсаулығыңызға қауіп төндіретін факторларды анықтаңыз.",
+      "Зардап шеккеннің өмірі мен денсаулығына қауіп факторларын анықтаңыз.",
+      "Қауіп факторларын жойыңыз.",
+      "Зардап шеккенге зақымдаушы факторлардың әсерін тоқтатыңыз.",
+      "Зардап шеккендер санын бағалаңыз.",
+      "Қажет болса зардап шеккенді қауіпсіз жерге ауыстырыңыз.",
+      "Жағдайды бағалаңыз: қауіпті қан кету бар ма, сана бар ма, тыныс бар ма.",
+      "103 (немесе 112) нөміріне жедел жәрдем шақырыңыз."
+    ],
+    donts: [
+      "Өз қауіпсіздігіңізге көз жеткізбей көмекке асықпаңыз."
+    ]
+  },
+  vyzov: {
+    name: "Жедел жәрдемді қалай шақыру",
+    when: "Жедел жәрдем шақырғанда диспетчерге не айту керек.",
+    why: "Нақты деректер диспетчерге қажетті бригаданы жіберуге және орынды тез табуға көмектеседі. Мекенжай мен бағдарсыз жедел жәрдем іздеуге уақыт жоғалтады, ал бұл ауыр жағдайларда өте маңызды.",
+    steps: [
+      "103 (жедел жәрдем) немесе 112 (бірыңғай қызмет) нөміріне қоңырау шалыңыз.",
+      "Зардап шеккеннің тегі, аты, әкесінің аты, жасы мен жынысын айтыңыз.",
+      "Зардап шеккеннің жағдайын және оқиға, жарақат немесе аурудың мән-жайын сипаттаңыз.",
+      "Нақты мекенжай мен телефонды айтыңыз.",
+      "Зардап шеккеннің тұрған жеріне жету бойынша бағдарлық деректерді хабарлаңыз.",
+      "Бірінші болып тұтқаны қоймаңыз — диспетчер барлық сұрақты қойғанша күтіңіз."
+    ],
+    donts: [
+      "Дабырламаңыз — анық және нақты сөйлеңіз.",
+      "Диспетчер шақыруды растағанша тұтқаны қоймаңыз."
+    ]
+  }
+};
+
+const LEARN_KK = [
+  { q: "Күйікті неге маймен немесе қаймақпен жағуға болмайды?",
+    a: "Майлы қабат жылуды тіндердің ішінде ұстап, оларды салқындатуға кедергі жасайды, сондықтан күйік тереңдей түседі. Стандарт бойынша күйікті суық сумен кемінде 15 минут салқындатып, таза ылғал таңғышпен жабады." },
+  { q: "Бұрауышты неге дәл жараның ЖОҒАРЫ жағына салады?",
+    a: "Қан қол мен аяққа дене ортасынан келеді. Жараның жоғарғы жағындағы тамырды қыссаң, зақым орнына қан ағыны тоқтайды. Жараның төменгі жағындағы бұрауыш қан кетуді тоқтатпайды." },
+  { q: "Мұрын қан кеткенде неге басты артқа шалқайтуға болмайды?",
+    a: "Бас артқа шалқайғанда қан тамақ пен асқазанға ағады — бұл құсуды тудырып, қан жоғалтуды бағалауға кедергі жасайды. Дұрысы: басты алға еңкейтіп, мұрын қанаттарын 10–15 минут қысып, мұрын үстіне суық қою." },
+  { q: "Есінен танған адамды неге бүйіріне жатқызады?",
+    a: "Арқасында жатқан есінен танған адамның тілі тыныс жолын жабуы мүмкін, ал құсқанда массалар өкпеге түседі. Бүйір (қалпына келтіру) қалпы тыныс жолдарын ашық ұстап, құсықты сыртқа шығарады." },
+  { q: "Құрысу кезінде адамды неге күшпен ұстауға болмайды?",
+    a: "Ұстаманы денені ұстап тоқтату мүмкін емес, ал бұл кезде бұлшықеттердің күшті қарсылығы сынықтар мен буын шығуларына әкеледі. Айналадағы қауіпті заттарды алып, бас астына жұмсақ зат қою керек." },
+  { q: "Жылан шаққанда неге уды соруға болмайды?",
+    a: "Сору тіндерге тараған уды кетірмейді, бірақ жараға және құтқарушының аузына инфекция енгізеді. Кесулер мен бұрауыштар да тыйым салынған — олар зақымды күшейтеді. Жараны сумен жуып, суық қою керек." },
+  { q: "Естен танғанда неге аяқты көтереді?",
+    a: "Естен тану — миға қанның қысқа мерзімді жетіспеушілігі. Жатқан адамның аяғын көтерсе, қан басқа қарай ағып, сана тезірек қайтады. Адамды тік көтеруге болмайды — естен тану қайталанады." },
+  { q: "Балаларға реанимация кезінде неге алдымен үрлеу жасайды?",
+    a: "Балалар мен нәрестелерде жүректің тоқтауы көбіне жүректің өзіндегі мәселеден емес, оттегі жетіспеушілігінен болады. Сондықтан өкпені ауамен толтыру үшін 5 үрлеуден бастап, содан кейін ғана басуларды жасайды." },
+  { q: "Жарадан шығып тұрған затты неге алуға болмайды?",
+    a: "Жарадағы бөгде зат зақымдалған тамырды ішінара бітеп тұр. Оны суырып алса, қатты қан кету басталады. Зат орнында қалдырылады, ал таңғыш оның айналасына салынады." },
+  { q: "Қышқылмен немесе сілтімен уланғанда неге құсуды тудыруға болмайды?",
+    a: "Күйдіргіш зат құсқанда өңеш пен жұтқыншақ арқылы қайта өтіп, оларды екінші рет күйдіреді, ал булар тыныс жолдарына түсуі мүмкін. Мұнай өнімдерімен, қышқылдармен және сілтімен уланғанда құсуды тудырмайды." },
+  { q: "Үсіген жерлерді неге уқалауға болмайды?",
+    a: "Тоңған тіндер нәзік, ал сезімталдық төмен. Уқалау оларды зақымдайды, ал ыстық заттар зардап шеккенге байқалмай күйік тудыруы мүмкін. Жылы бөлмеде, жылы сусынмен, біртіндеп жылыту керек." },
+  { q: "Орынның қауіпсіз екенін алдымен бағалау неге маңызды?",
+    a: "Құтқарушы қауіпті аймақта (от, ток, көлік қозғалысы) көмекке асықса, өзі зардап шегеді, сонда көмектесетін ешкім қалмайды. Стандарт алдымен өзі мен зардап шеккенге қауіпті жоюды талап етеді." }
+];
+
+/* ---------- АНГЛИЙСКИЙ ---------- */
+const HELP_EN = {
+  ozhog: {
+    name: "Burn",
+    when: "Thermal burn: contact with fire, boiling water, steam, hot objects.",
+    why: "Cooling with water for at least 15 minutes stops heat from spreading deeper into tissue and reduces the area and depth of the injury. A moist dressing protects the wound from infection and drying out. A grey or black crust must not be cut or touched — it is a deep burn, and any disturbance worsens the injury.",
+    steps: [
+      "Remove the danger. If impossible, call 103 (112).",
+      "Check consciousness and breathing. If absent, start basic resuscitation and call 103 (112).",
+      "If the skin shows redness, swelling or a blister, cool it with cold water for at least 15 minutes.",
+      "Cut the clothing along the edge of the burn wound (do not tear off stuck fabric).",
+      "Apply a wide, clean, moist dressing to the wound.",
+      "If there is a grey or black crust: cut the clothing along the wound edge and apply a moist dressing, use a plastic bag to keep the dressing moist.",
+      "Give the casualty a comfortable position and monitor their condition until the ambulance arrives."
+    ],
+    donts: [
+      "Do not cut or touch the crust that has formed.",
+      "Do not tear off clothing stuck to the wound.",
+      "Do not pop blisters."
+    ]
+  },
+  krov: {
+    name: "External bleeding",
+    when: "Any external bleeding: head, nose, neck, chest, abdomen, limbs.",
+    why: "Direct pressure and a pressure dressing compress the damaged vessel and let the blood clot. A tourniquet on a limb is applied above the wound because blood flows to the limb from the centre of the body. Foreign objects are not removed — they partly plug the vessel, and removing them causes sudden bleeding.",
+    steps: [
+      "Call 103 (112).",
+      "Head bleeding: apply a pressure dressing of several layers of bandage, seat the casualty comfortably.",
+      "Nose bleeding: pinch the nostrils for 10–15 minutes, apply cold to the bridge of the nose through a towel.",
+      "Neck bleeding: quickly press the bleeding point with your fingers, apply a bandage of several layers and press it with your hands until the ambulance arrives.",
+      "Abdomen or chest bleeding: apply a bandage of several layers.",
+      "Limb bleeding: apply a tourniquet above the bleeding site (belt, tie, fabric), put a short stick under the fabric and twist 2–3 turns until bleeding stops, then apply a pressure dressing."
+    ],
+    donts: [
+      "Do not tilt the head back during a nosebleed.",
+      "During a nosebleed do not blow your nose or lie down.",
+      "If there is a foreign object in the wound, do not touch it or try to remove it."
+    ]
+  },
+  soznanie: {
+    name: "No consciousness",
+    when: "The casualty is unconscious but breathing.",
+    why: "The recovery (side) position stops the tongue from blocking the airway and prevents vomit from entering the lungs. The head is tilted back so the airway stays open. The casualty must not be left unattended, because breathing can stop at any moment.",
+    steps: [
+      "Remove the danger to yourself and the casualty.",
+      "Remove the casualty's glasses if they wear them.",
+      "Kneel beside them; the casualty's legs should be straight.",
+      "Place the arm nearer to you at a right angle to the body, bent at the elbow, palm up.",
+      "Bring the far arm across the chest and place the back of the hand against the cheek.",
+      "Take the far leg above the knee and lift it; the foot stays on the ground.",
+      "Holding the hand at the cheek, press the far leg and roll the casualty onto their side towards you.",
+      "Bend the hip and knee at a right angle, tilt the head back to open the airway.",
+      "Call 103 (112) and regularly check breathing until the ambulance arrives."
+    ],
+    donts: [
+      "Do not leave the casualty unattended.",
+      "Do not lift them into an upright position."
+    ]
+  },
+  reanimaciya: {
+    name: "Breathing stopped",
+    when: "The casualty is unconscious and not breathing.",
+    why: "Chest compressions artificially pump blood through the body and supply the brain with oxygen while the heart is not working. The depth and rate are set to create enough blood flow. In children and infants the depth is smaller because of chest size, and rescue breaths come first since their cause is more often lack of air.",
+    steps: [
+      "Remove the danger, call 103 (112) and immediately start continuous chest compressions until the ambulance arrives.",
+      "Adult over 12: 30 compressions on the centre of the chest with the heel of one hand (the other hand on top) to a depth of 5–6 cm and 2 rescue breaths.",
+      "Child aged 1 to 12: first 5 rescue breaths (lips around the mouth, each breath 1 second), then 30 compressions on the centre of the chest to a depth of 4–5 cm and 2 breaths.",
+      "Infant aged 0 to 12 months: 5 rescue breaths (lips around both mouth and nose), 30 compressions with two fingers to a third of the chest depth and 2 breaths.",
+      "If an automated defibrillator is available, use it to improve the chance of survival.",
+      "If breathing and heartbeat return, move the casualty into the recovery (side) position.",
+      "Do not leave them unattended until the ambulance arrives."
+    ],
+    donts: [
+      "Do not interrupt chest compressions without need.",
+      "Do not leave the casualty unattended."
+    ]
+  },
+  inorodnoe: {
+    name: "Choking (foreign object)",
+    when: "A foreign object in the upper airway; the casualty is choking.",
+    why: "If the person is coughing, the cough itself pushes the object out, so you must not interfere. Back blows and abdominal thrusts create a sharp burst of air pressure in the lungs that dislodges the stuck object. For pregnant women and people with a large abdomen, abdominal thrusts are replaced with chest thrusts.",
+    steps: [
+      "If the casualty can speak, cough or cry, encourage coughing, do not interfere, do not hit the back, monitor their condition.",
+      "If they cannot speak, give up to five sliding blows with your hand between the shoulder blades.",
+      "If that does not help, stand behind them, wrap your arms around, make a fist with one hand and press it thumb-side against the abdomen between the navel and the chest.",
+      "Place the other palm on the fist and make sharp, strong thrusts into the abdomen.",
+      "Alternate: five abdominal thrusts, then five back blows, until coughing appears.",
+      "Pregnant woman or person with a large abdomen: instead of abdominal thrusts, make five compressions on the centre of the chest; if it fails, repeat the back blows.",
+      "If the casualty loses consciousness, move on to basic resuscitation."
+    ],
+    donts: [
+      "If the person is coughing and can speak, do not hit them on the back.",
+      "Do not stop the casualty from coughing on their own."
+    ]
+  },
+  travma: {
+    name: "Injury",
+    when: "Injuries to various body areas: open and closed, fractures, spinal injury.",
+    why: "Cold on a closed injury narrows the vessels and reduces swelling and pain. Fixing the limb stops the damaged bones from shifting and injuring tissue. With a spinal injury the head is kept in line with the body, because any movement can damage the spinal cord.",
+    steps: [
+      "If the place is safe and the casualty is conscious and breathing, call 103 (112).",
+      "Determine the type of injury: open or closed.",
+      "Closed injury: apply cold through fabric for 10–15 minutes, fix the limb with improvised means, move the casualty into a comfortable position.",
+      "Open injury: if bleeding, rinse the wound with clean water, apply a bandage of several layers, fix the limb.",
+      "With a spinal injury, fix the head in line with the body, holding it with your hands the whole time.",
+      "If internal organs are visible, cover them with moist fabric, then plastic, and apply a tight dressing.",
+      "If bleeding is heavy, apply a tourniquet above the bleeding site.",
+      "With a fracture, fix the casualty in the original position until the ambulance arrives."
+    ],
+    donts: [
+      "Do not remove foreign objects from the chest or abdomen.",
+      "Do not set bones or move the casualty if a spinal fracture is suspected."
+    ]
+  },
+  obmorozhenie: {
+    name: "Frostbite",
+    when: "Frostbite and other effects of low temperatures.",
+    why: "Gradual warming restores blood flow to the tissue without sudden damage. Rubbing, ointments and hot objects are dangerous with frostbite — they injure the frozen tissue and can cause a burn, since sensitivity is reduced. Alcohol widens the skin vessels and increases heat loss.",
+    steps: [
+      "If the casualty is conscious and breathing, call 103 (112). If not, basic resuscitation and call 103 (112).",
+      "Move the casualty to a warm room.",
+      "Carefully remove clothing and footwear from the affected area.",
+      "Give a warm drink.",
+      "Gradually warm the affected part of the body.",
+      "Apply a dressing of improvised means to the affected areas.",
+      "Monitor the condition until the ambulance arrives."
+    ],
+    donts: [
+      "Do not rub the affected areas or apply ointments, oils or alcohol.",
+      "Do not apply hot objects (a heating pad, a heater).",
+      "Alcohol must not be consumed."
+    ]
+  },
+  otravlenie: {
+    name: "Poisoning",
+    when: "Poisoning: the poison entered through the mouth, airways or skin.",
+    why: "Drinking plenty of water dilutes the poison in the stomach. The side position prevents choking on vomit. With poisoning by petroleum products, acids and alkalis, vomiting is not induced — the caustic substance passing again would burn the oesophagus and airways. Activated charcoal binds the poison in the intestine.",
+    steps: [
+      "If the casualty is conscious and breathing, call 103 (112). If not, basic resuscitation and call 103 (112).",
+      "Poison entered through the mouth: give a large amount of water to drink, move into the side position so they do not choke on vomit.",
+      "Poison entered through the airways: bring the casualty to fresh air in a safe place, give a comfortable position, free them from tight clothing.",
+      "Poison entered through the skin or mucous membranes: clean the surface of the poison with improvised means (bandage), rinse the skin or mucous membrane with water.",
+      "If necessary, give adsorbent agents (activated charcoal).",
+      "Monitor the condition until the ambulance arrives."
+    ],
+    donts: [
+      "Do not induce vomiting in case of poisoning by petroleum products, acids or alkalis.",
+      "Do not give laxatives in such poisonings."
+    ]
+  },
+  sudorogi: {
+    name: "Seizure",
+    when: "The casualty is having a seizure.",
+    why: "A seizure cannot be stopped by force — it is useless and dangerous: it can break bones or dislocate joints. Dangerous objects are moved away and something soft is placed under the head so the person is not injured during the seizure. After the seizure, the side position protects breathing.",
+    steps: [
+      "Call 103 (112).",
+      "Do not try to stop the seizure and do not hold the casualty by force.",
+      "Move away nearby objects that could cause injury.",
+      "Place a soft pillow or any improvised item under the head.",
+      "If the seizure has stopped and the casualty is conscious, prevent sudden movements and monitor their condition.",
+      "If the seizure has not stopped and the casualty is unconscious but breathing, move them into the side position.",
+      "If there is no consciousness and no breathing, perform basic resuscitation until the ambulance arrives."
+    ],
+    donts: [
+      "Do not try to stop the seizure by force.",
+      "Do not hold the casualty down.",
+      "Do not put anything in their mouth."
+    ]
+  },
+  ukus: {
+    name: "Bite",
+    when: "Bites of animals, snakes, insects.",
+    why: "Rinsing the wound with water removes part of the poison and dirt. Cold slows the spread of the poison and reduces swelling. Snake venom must not be sucked out, nor the wound cut — this does not remove the venom but adds infection and blood loss. A tourniquet for a snakebite is dangerous — it worsens tissue damage.",
+    steps: [
+      "Remove the danger. If impossible, call 103 (112).",
+      "If the place is safe and the casualty is conscious and breathing, call 103 (112).",
+      "Identify the bite site on the body.",
+      "If bleeding: rinse the wound with water, apply a pressure dressing of bandage, monitor the condition.",
+      "If no bleeding: rinse the wound with water, apply cold to the bite site.",
+      "For a wasp or bee sting, carefully remove the stinger.",
+      "If there is swelling at the bite site, apply a cold compress."
+    ],
+    donts: [
+      "For a venomous snakebite, do not suck out the venom.",
+      "Do not cut the wound.",
+      "Do not use tourniquets for a snakebite."
+    ]
+  },
+  obmorok: {
+    name: "Fainting",
+    when: "The casualty suddenly lost consciousness (fainting).",
+    why: "Raised legs increase blood flow to the brain — fainting is most often caused by a temporary shortage of brain blood supply. Fresh air and loosened clothing make breathing easier. The person must not be lifted upright — blood would drain from the brain again and the faint would recur.",
+    steps: [
+      "If the casualty is breathing, call 103 (112). If not breathing, basic resuscitation and call 103 (112).",
+      "Lay them on their back and raise their legs.",
+      "Loosen any constricting parts of clothing.",
+      "Provide a flow of fresh air.",
+      "Wipe the face with cool water or place a wet towel on the forehead.",
+      "If there is vomiting, turn the head to the side or move them into the side position.",
+      "Monitor the condition until the ambulance arrives."
+    ],
+    donts: [
+      "Do not lift the casualty into an upright position."
+    ]
+  },
+  "bol-grud": {
+    name: "Chest pain",
+    when: "Severe, burning chest pain radiating to the arm or neck.",
+    why: "Such pain can be a sign of a heart attack. Stopping exertion and a comfortable position reduce the heart's need for oxygen. Loosened clothing makes breathing easier. The ambulance is called immediately, because in a heart attack every minute counts.",
+    steps: [
+      "Call 103 (112).",
+      "If necessary, stop physical activity.",
+      "Seat the casualty comfortably.",
+      "Loosen tight clothing.",
+      "Monitor the condition until the ambulance arrives.",
+      "If necessary, perform basic resuscitation."
+    ],
+    donts: [
+      "Do not make the casualty move or walk.",
+      "Do not leave them unattended."
+    ]
+  },
+  vosstanov: {
+    name: "Recovery position",
+    when: "The casualty is unconscious but breathing — they need to be moved into a safe position.",
+    why: "The recovery (side) position keeps the airway open and prevents vomit or the tongue from blocking breathing. It is the basic technique used in any unconscious state with breathing preserved.",
+    steps: [
+      "Remove the casualty's glasses if they wear them.",
+      "Kneel beside them; the casualty's legs are straight.",
+      "Place the near arm at a right angle to the body, bent at the elbow, palm up.",
+      "Bring the far arm across the chest, place the back of the hand against the cheek.",
+      "Take the far leg above the knee and lift it; the foot stays on the ground.",
+      "Holding the hand at the cheek, press the far leg and roll the casualty onto their side towards you.",
+      "Bend the hip and knee at a right angle, tilt the head back.",
+      "Regularly check breathing until the ambulance 103 (112) arrives."
+    ],
+    donts: [
+      "Do not leave the casualty unattended."
+    ]
+  },
+  transport: {
+    name: "Transport",
+    when: "The casualty needs to be moved before the ambulance arrives.",
+    why: "The position during transport depends on the injury: it must keep the damaged body parts from shifting and protect breathing. A wrong position while moving can worsen the injury, especially with a spinal injury.",
+    steps: [
+      "Unconscious: transport in the recovery (side) position.",
+      "Head and neck injury: on the back, with rolls around the head and a soft roll under the neck.",
+      "Spinal injury: on a firm stretcher on the back with rolls under the neck, lower back and knees — or on a soft stretcher on the stomach.",
+      "Chest injury: half-sitting with a roll under the knees, or in the side position on the injured side.",
+      "Abdominal injury: in the side position.",
+      "Pelvic injury: on the back with a roll under the knees and legs slightly apart.",
+      "If there is no consciousness and no breathing, perform basic resuscitation and call 103 (112)."
+    ],
+    donts: [
+      "Do not move a spinal injury without fixation.",
+      "Do not transport unnecessarily — wait for the ambulance if possible."
+    ]
+  },
+  ocenka: {
+    name: "Assessing the scene",
+    when: "The first actions at the scene before giving aid.",
+    why: "Before helping, you must make sure the place is safe — otherwise the rescuer becomes a casualty. Assessing consciousness, breathing and bleeding determines what to do first: stop the bleeding, start resuscitation or move into the side position.",
+    steps: [
+      "Identify factors threatening your own life and health.",
+      "Identify factors threatening the casualty's life and health.",
+      "Remove the threatening factors.",
+      "Stop the damaging factors from acting on the casualty.",
+      "Assess the number of casualties.",
+      "If necessary, move the casualty to a safe place.",
+      "Assess the condition: is there dangerous bleeding, is there consciousness, is there breathing.",
+      "Call an ambulance on 103 (or 112)."
+    ],
+    donts: [
+      "Do not rush to help without making sure of your own safety."
+    ]
+  },
+  vyzov: {
+    name: "How to call an ambulance",
+    when: "What to tell the dispatcher when calling an ambulance.",
+    why: "Accurate details help the dispatcher send the right team and find the location quickly. Without an address and landmarks the ambulance loses time searching, which is critical in serious conditions.",
+    steps: [
+      "Call 103 (ambulance) or 112 (single service).",
+      "Give the casualty's surname, name, patronymic, age and sex.",
+      "Describe the casualty's condition and the circumstances of the accident, injury or illness.",
+      "Give the exact address and phone number.",
+      "Provide directions on how to reach the casualty's location.",
+      "Do not hang up first — wait until the dispatcher has asked all questions."
+    ],
+    donts: [
+      "Do not panic — speak clearly and to the point.",
+      "Do not hang up until the dispatcher confirms the call."
+    ]
+  }
+};
+
+const LEARN_EN = [
+  { q: "Why must you not put oil or sour cream on a burn?",
+    a: "A greasy film holds heat inside the tissue and prevents it from cooling, so the burn becomes deeper. The standard says to cool a burn with cold water for at least 15 minutes and cover it with a clean moist dressing." },
+  { q: "Why is a tourniquet applied ABOVE the wound?",
+    a: "Blood reaches the arms and legs from the centre of the body. If you compress the vessel above the wound, blood flow to the injury stops. A tourniquet below the wound will not stop the bleeding." },
+  { q: "Why must you not tilt the head back during a nosebleed?",
+    a: "With the head tilted back, blood runs down the throat into the stomach — this causes vomiting and makes it hard to assess blood loss. The correct way: tilt the head forward, pinch the nostrils for 10–15 minutes and apply cold to the bridge of the nose." },
+  { q: "Why is an unconscious person placed on their side?",
+    a: "In a person lying on their back, the tongue can fall back and block breathing, and vomit can enter the lungs. The side (recovery) position keeps the airway open and lets vomit drain out." },
+  { q: "Why must you not hold a person down during a seizure?",
+    a: "A seizure cannot be stopped by holding the body, and strong muscle resistance leads to fractures and dislocations. You should move dangerous objects away and place something soft under the head." },
+  { q: "Why must you not suck out venom from a snakebite?",
+    a: "Sucking does not remove venom that has already spread through the tissue, but it introduces infection into the wound and the rescuer's mouth. Cuts and tourniquets are also forbidden — they worsen the damage. Rinse the wound with water and apply cold." },
+  { q: "Why are the legs raised during fainting?",
+    a: "Fainting is a brief shortage of blood in the brain. Raising the legs of a lying person sends blood to the head and consciousness returns faster. The person must not be lifted upright — the faint would recur." },
+  { q: "Why are rescue breaths given first to children during resuscitation?",
+    a: "In children and infants, cardiac arrest is most often caused by lack of oxygen rather than a problem with the heart itself. So you start with 5 rescue breaths to fill the lungs with air, and only then do compressions." },
+  { q: "Why must you not remove an object stuck in a wound?",
+    a: "A foreign object in a wound partly plugs the damaged vessel. If you pull it out, heavy bleeding begins. The object is left in place and the dressing is applied around it." },
+  { q: "Why must you not induce vomiting in poisoning by acid or alkali?",
+    a: "When vomiting, the caustic substance passes through the oesophagus and throat again and burns them a second time, and the fumes can enter the airways. With poisoning by petroleum products, acids and alkalis, vomiting is not induced." },
+  { q: "Why must frostbitten areas not be rubbed?",
+    a: "Frozen tissue is fragile and sensitivity is reduced. Rubbing damages it, and hot objects can cause a burn unnoticed by the casualty. Warming must be gradual, in a warm room, with a warm drink." },
+  { q: "Why is it important to first assess whether the scene is safe?",
+    a: "If the rescuer rushes to help in a dangerous zone (fire, electricity, traffic), they become a casualty themselves and there is no one left to help. The standard requires first removing the threat to yourself and the casualty." }
+];
+
+/* Контент карточек звонка и погоды переводится по тем же ключам ниже в data.js */
+
+
+/* ============================================================
+   SaneUp — ПЕРЕВОДЫ: службы вызова + погодные предупреждения
+   на все 11 языков.
+   ============================================================ */
+
+/* ----- ЭКСТРЕННЫЕ СЛУЖБЫ ----- */
+/* Номера одинаковы, переводятся название и описание. */
+const CALL_I18N = {
+  kk: [
+    { name: "Жедел жәрдем", desc: "Жедел медициналық жәрдем бригадасы. Өмірге қауіп төнсе қоңырау шалыңыз." },
+    { name: "Біртұтас құтқару қызметі", desc: "Біртұтас жедел нөмір. SIM-картасыз және баланссыз да жұмыс істейді." },
+    { name: "Өрт сөндіру қызметі", desc: "Өрт, түтін, күйік иісі." },
+    { name: "Полиция", desc: "Оқиға, қауіп, тәртіп сақтау қажет." }
+  ],
+  ru: [
+    { name: "Скорая помощь", desc: "Бригада скорой медицинской помощи. Звоните при любой угрозе жизни и здоровью." },
+    { name: "Единая служба спасения", desc: "Единый номер экстренных служб. Работает даже без SIM-карты и баланса." },
+    { name: "Пожарная служба", desc: "Пожар, задымление, запах гари." },
+    { name: "Полиция", desc: "Происшествие, угроза, нужна охрана правопорядка." }
+  ],
+  en: [
+    { name: "Ambulance", desc: "Emergency medical team. Call for any threat to life and health." },
+    { name: "Single rescue service", desc: "Single emergency number. Works even without a SIM card or balance." },
+    { name: "Fire service", desc: "Fire, smoke, smell of burning." },
+    { name: "Police", desc: "Incident, threat, law enforcement needed." }
+  ],
+  uz: [
+    { name: "Tez yordam", desc: "Tez tibbiy yordam brigadasi. Hayotga xavf tug‘ilsa qo‘ng‘iroq qiling." },
+    { name: "Yagona qutqaruv xizmati", desc: "Yagona favqulodda raqam. SIM-karta va balanssiz ham ishlaydi." },
+    { name: "Yong‘in xizmati", desc: "Yong‘in, tutun, kuyik hidi." },
+    { name: "Politsiya", desc: "Hodisa, xavf, tartibni saqlash kerak." }
+  ],
+  ky: [
+    { name: "Тез жардам", desc: "Тез медициналык жардам бригадасы. Өмүргө коркунуч болсо чалыңыз." },
+    { name: "Бирдиктүү куткаруу кызматы", desc: "Бирдиктүү шашылыш номер. SIM-картасыз жана баланссыз да иштейт." },
+    { name: "Өрт өчүрүү кызматы", desc: "Өрт, түтүн, күйүк жыты." },
+    { name: "Полиция", desc: "Окуя, коркунуч, тартип сактоо керек." }
+  ],
+  tr: [
+    { name: "Ambulans", desc: "Acil tıbbi ekip. Hayati tehlike durumunda arayın." },
+    { name: "Tek kurtarma servisi", desc: "Tek acil numara. SIM kart veya bakiye olmadan da çalışır." },
+    { name: "İtfaiye", desc: "Yangın, duman, yanık kokusu." },
+    { name: "Polis", desc: "Olay, tehdit, güvenlik gerekli." }
+  ],
+  zh: [
+    { name: "救护车", desc: "急救医疗队。任何危及生命健康的情况都请拨打。" },
+    { name: "统一救援服务", desc: "统一紧急号码。即使没有 SIM 卡或话费也能使用。" },
+    { name: "消防", desc: "火灾、烟雾、焦糊味。" },
+    { name: "警察", desc: "事故、威胁、需要治安维护。" }
+  ],
+  es: [
+    { name: "Ambulancia", desc: "Equipo médico de emergencia. Llame ante cualquier amenaza a la vida y la salud." },
+    { name: "Servicio único de rescate", desc: "Número único de emergencia. Funciona incluso sin tarjeta SIM ni saldo." },
+    { name: "Bomberos", desc: "Incendio, humo, olor a quemado." },
+    { name: "Policía", desc: "Incidente, amenaza, se necesita seguridad." }
+  ],
+  ar: [
+    { name: "الإسعاف", desc: "فريق طبي طارئ. اتصل عند أي تهديد للحياة والصحة." },
+    { name: "خدمة الإنقاذ الموحدة", desc: "رقم طوارئ موحد. يعمل حتى بدون شريحة SIM أو رصيد." },
+    { name: "الإطفاء", desc: "حريق، دخان، رائحة احتراق." },
+    { name: "الشرطة", desc: "حادثة، تهديد، حاجة إلى حفظ الأمن." }
+  ],
+  fr: [
+    { name: "Ambulance", desc: "Équipe médicale d'urgence. Appelez pour toute menace à la vie et à la santé." },
+    { name: "Service unique de secours", desc: "Numéro d'urgence unique. Fonctionne même sans carte SIM ni crédit." },
+    { name: "Pompiers", desc: "Incendie, fumée, odeur de brûlé." },
+    { name: "Police", desc: "Incident, menace, maintien de l'ordre nécessaire." }
+  ],
+  de: [
+    { name: "Rettungsdienst", desc: "Notärztliches Team. Rufen Sie bei jeder Gefahr für Leben und Gesundheit an." },
+    { name: "Einheitlicher Rettungsdienst", desc: "Einheitliche Notrufnummer. Funktioniert auch ohne SIM-Karte oder Guthaben." },
+    { name: "Feuerwehr", desc: "Brand, Rauch, Brandgeruch." },
+    { name: "Polizei", desc: "Vorfall, Bedrohung, Ordnungshüter benötigt." }
+  ]
+};
+
+/* ----- ПОГОДНЫЕ ПРЕДУПРЕЖДЕНИЯ ----- */
+const WEATHER_I18N = {
+  kk: {
+    heat:  { title: "Аптап ыстық", desc: "Жоғары температура. Су ішіңіз, 12:00–16:00 күннен сақтаныңыз, жылу соққысын ұмытпаңыз." },
+    cold:  { title: "Қатты аяз", desc: "Үсу қаупі. Жылы киініңіз, бет пен қолды жабыңыз." },
+    storm: { title: "Найзағай / дауыл", desc: "Ағаш астында және ашық жерде болмаңыз. Үйде болыңыз." },
+    ice:   { title: "Көктайғақ", desc: "Тайғақ — құлау мен сынық қаупі жоғары. Абайлап жүріңіз." },
+    ok:    { title: "Ауа райы тыныш", desc: "Ерекше ескертулер жоқ. Болжам интернетке қосылғанда жаңарады." }
+  },
+  ru: {
+    heat:  { title: "Жара", desc: "Высокая температура. Пейте воду, избегайте солнца 12:00–16:00, помните про тепловой удар." },
+    cold:  { title: "Сильный мороз", desc: "Риск обморожения. Одевайтесь теплее, прикрывайте лицо и руки." },
+    storm: { title: "Гроза / буря", desc: "Не находитесь под деревьями и на открытых местах. Будьте дома." },
+    ice:   { title: "Гололёд", desc: "Скользко — высокий риск падений и переломов. Двигайтесь осторожно." },
+    ok:    { title: "Погода спокойная", desc: "Особых предупреждений нет. Прогноз обновится при подключении к интернету." }
+  },
+  en: {
+    heat:  { title: "Heat", desc: "High temperature. Drink water, avoid the sun 12:00–16:00, beware of heatstroke." },
+    cold:  { title: "Severe frost", desc: "Risk of frostbite. Dress warmly, cover your face and hands." },
+    storm: { title: "Thunderstorm / storm", desc: "Do not stand under trees or in open areas. Stay indoors." },
+    ice:   { title: "Ice on roads", desc: "Slippery — high risk of falls and fractures. Move carefully." },
+    ok:    { title: "Weather is calm", desc: "No special warnings. The forecast will update when you connect to the internet." }
+  },
+  uz: {
+    heat:  { title: "Jazirama", desc: "Yuqori harorat. Suv iching, 12:00–16:00 quyoshdan saqlaning, issiq urishini unutmang." },
+    cold:  { title: "Qattiq sovuq", desc: "Sovuq olish xavfi. Issiq kiyining, yuz va qo‘llarni yoping." },
+    storm: { title: "Momaqaldiroq / bo‘ron", desc: "Daraxt tagida va ochiq joyda turmang. Uyda bo‘ling." },
+    ice:   { title: "Yo‘l muzlashi", desc: "Sirpanchiq — yiqilish va singan xavfi yuqori. Ehtiyot bo‘lib yuring." },
+    ok:    { title: "Ob-havo tinch", desc: "Maxsus ogohlantirishlar yo‘q. Prognoz internetga ulanganda yangilanadi." }
+  },
+  ky: {
+    heat:  { title: "Аптап ысык", desc: "Жогорку температура. Суу ичиңиз, 12:00–16:00 күндөн сактаныңыз, ысык урганды унутпаңыз." },
+    cold:  { title: "Катуу аяз", desc: "Үшүү коркунучу. Жылуу кийиниңиз, бет менен колду жабыңыз." },
+    storm: { title: "Чагылган / бороон", desc: "Дарак астында жана ачык жерде турбаңыз. Үйдө болуңуз." },
+    ice:   { title: "Тоңголок", desc: "Тайгак — кулоо жана сынуу коркунучу жогору. Этият жүрүңүз." },
+    ok:    { title: "Аба ырайы тынч", desc: "Өзгөчө эскертүүлөр жок. Божомол интернетке туташканда жаңырат." }
+  },
+  tr: {
+    heat:  { title: "Sıcak", desc: "Yüksek sıcaklık. Su için, 12:00–16:00 güneşten kaçının, sıcak çarpmasına dikkat." },
+    cold:  { title: "Şiddetli soğuk", desc: "Donma riski. Sıcak giyinin, yüz ve ellerinizi örtün." },
+    storm: { title: "Fırtına", desc: "Ağaç altında ve açık alanda durmayın. İçeride kalın." },
+    ice:   { title: "Buzlanma", desc: "Kaygan — düşme ve kırık riski yüksek. Dikkatli hareket edin." },
+    ok:    { title: "Hava sakin", desc: "Özel uyarı yok. İnternete bağlandığınızda tahmin güncellenecek." }
+  },
+  zh: {
+    heat:  { title: "高温", desc: "气温很高。多喝水，12:00–16:00 避免日晒，注意中暑。" },
+    cold:  { title: "严寒", desc: "有冻伤风险。穿暖和点，遮住脸和手。" },
+    storm: { title: "雷暴 / 暴风", desc: "不要待在树下或空旷处。请待在室内。" },
+    ice:   { title: "道路结冰", desc: "路面湿滑——跌倒和骨折风险高。小心行走。" },
+    ok:    { title: "天气平静", desc: "没有特别警报。连接网络后预报将更新。" }
+  },
+  es: {
+    heat:  { title: "Calor", desc: "Temperatura alta. Beba agua, evite el sol de 12:00 a 16:00, cuidado con el golpe de calor." },
+    cold:  { title: "Frío intenso", desc: "Riesgo de congelación. Abríguese, cubra la cara y las manos." },
+    storm: { title: "Tormenta", desc: "No se quede bajo árboles ni en zonas abiertas. Permanezca en interiores." },
+    ice:   { title: "Hielo en las vías", desc: "Resbaladizo — alto riesgo de caídas y fracturas. Muévase con cuidado." },
+    ok:    { title: "Tiempo en calma", desc: "Sin avisos especiales. El pronóstico se actualizará al conectarse a internet." }
+  },
+  ar: {
+    heat:  { title: "حرارة", desc: "درجة حرارة عالية. اشرب الماء، تجنّب الشمس من 12:00 إلى 16:00، احذر ضربة الشمس." },
+    cold:  { title: "صقيع شديد", desc: "خطر قضمة الصقيع. ارتدِ ملابس دافئة وغطِّ وجهك ويديك." },
+    storm: { title: "عاصفة رعدية", desc: "لا تقف تحت الأشجار أو في الأماكن المكشوفة. ابقَ في الداخل." },
+    ice:   { title: "تجمّد الطرق", desc: "زلق — خطر السقوط والكسور مرتفع. تحرّك بحذر." },
+    ok:    { title: "الطقس هادئ", desc: "لا توجد تحذيرات خاصة. ستُحدَّث التوقعات عند الاتصال بالإنترنت." }
+  },
+  fr: {
+    heat:  { title: "Chaleur", desc: "Température élevée. Buvez de l'eau, évitez le soleil de 12h à 16h, attention au coup de chaleur." },
+    cold:  { title: "Froid intense", desc: "Risque de gelure. Habillez-vous chaudement, couvrez le visage et les mains." },
+    storm: { title: "Orage / tempête", desc: "Ne restez pas sous les arbres ni dans les zones ouvertes. Restez à l'intérieur." },
+    ice:   { title: "Verglas", desc: "Glissant — risque élevé de chutes et de fractures. Déplacez-vous prudemment." },
+    ok:    { title: "Temps calme", desc: "Pas d'alerte particulière. Les prévisions se mettront à jour à la connexion internet." }
+  },
+  de: {
+    heat:  { title: "Hitze", desc: "Hohe Temperatur. Trinken Sie Wasser, meiden Sie die Sonne 12:00–16:00, achten Sie auf Hitzschlag." },
+    cold:  { title: "Strenger Frost", desc: "Erfrierungsgefahr. Ziehen Sie sich warm an, bedecken Sie Gesicht und Hände." },
+    storm: { title: "Gewitter / Sturm", desc: "Bleiben Sie nicht unter Bäumen oder im Freien. Bleiben Sie drinnen." },
+    ice:   { title: "Glatteis", desc: "Rutschig — hohes Risiko für Stürze und Brüche. Bewegen Sie sich vorsichtig." },
+    ok:    { title: "Wetter ruhig", desc: "Keine besonderen Warnungen. Die Vorhersage wird bei Internetverbindung aktualisiert." }
+  }
+};
+
+/* Иконки погоды (одинаковые для всех языков) */
+const WEATHER_ICONS = { heat: "🥵", cold: "🥶", storm: "⛈️", ice: "🧊", ok: "🌤️" };
+
+
+/* ============================================================
+   SaneUp — БАЗА ДАННЫХ ПЕРВОЙ ПОМОЩИ
+   Источник: Стандарт оказания первой помощи РК
+   (Приказ Министра здравоохранения РК № ҚР ДСМ-269/2020)
+   ============================================================ */
+
+const HELP_DATA = [
+  {
+    id: "ozhog",
+    icon: "🔥",
+    name: "Ожог",
+    when: "Термический ожог: воздействие огня, кипятка, пара, горячих предметов.",
+    why: "Охлаждение водой не менее 15 минут останавливает прогревание тканей вглубь и уменьшает площадь и глубину поражения. Влажная повязка защищает рану от инфекции и пересыхания. Корочку срезать и трогать нельзя — это глубокий ожог, любое повреждение усилит травму.",
+    steps: [
+      "Устраните опасность. Если это невозможно — звоните 103 (112).",
+      "Проверьте сознание и дыхание. Если их нет — начинайте базовую реанимацию и вызывайте 103 (112).",
+      "Если на коже покраснение, отёк или пузырь — охлаждайте холодной водой не менее 15 минут.",
+      "Срежьте одежду по краю ожоговой раны (не отрывайте прилипшую).",
+      "Наложите широкую, чистую и влажную повязку на рану.",
+      "При корочке серого или чёрного цвета: срежьте одежду по краю раны и наложите влажную повязку, для сохранения влаги используйте полиэтиленовый пакет.",
+      "Придайте пострадавшему удобное положение и контролируйте состояние до приезда скорой."
+    ],
+    donts: [
+      "Не срезайте и не трогайте образовавшуюся корочку.",
+      "Не отрывайте прилипшую к ране одежду.",
+      "Не вскрывайте пузыри."
+    ]
+  },
+  {
+    id: "krov",
+    icon: "🩸",
+    name: "Наружное кровотечение",
+    when: "Любое наружное кровотечение: голова, нос, шея, грудь, живот, конечности.",
+    why: "Прямое давление и давящая повязка пережимают повреждённый сосуд и дают крови свернуться. Жгут на конечности применяется при сильном кровотечении и накладывается выше раны, потому что кровь к конечности идёт от центра тела. Инородные предметы не извлекают — они сами закупоривают сосуд, и их удаление вызовет резкое кровотечение.",
+    steps: [
+      "Вызовите 103 (112).",
+      "Кровотечение головы: наложите давящую повязку из бинта в несколько слоёв, усадите пострадавшего удобно.",
+      "Кровотечение носа: сдавите крылья носа пальцами на 10–15 минут, приложите холод к переносице через полотенце.",
+      "Кровотечение шеи: быстро прижмите место кровотечения пальцами, наложите повязку из бинта в несколько слоёв и прижмите руками до приезда скорой.",
+      "Кровотечение живота или груди: наложите повязку из бинта в несколько слоёв.",
+      "Кровотечение конечности: наложите жгут выше места кровотечения (ремень, галстук, ткань), вставьте под ткань короткую палку и закрутите в 2–3 оборота до остановки крови, затем наложите давящую повязку."
+    ],
+    donts: [
+      "При носовом кровотечении не запрокидывайте голову назад.",
+      "При носовом кровотечении нельзя высмаркиваться и ложиться.",
+      "Если в ране есть посторонний предмет — не трогайте и не пытайтесь его извлечь."
+    ]
+  },
+  {
+    id: "soznanie",
+    icon: "😵",
+    name: "Нет сознания",
+    when: "Пострадавший без сознания, но дышит.",
+    why: "Восстановительное (боковое) положение не даёт языку перекрыть дыхательные пути, а рвотным массам — попасть в лёгкие. Голову наклоняют назад, чтобы дыхательные пути оставались открытыми. За пострадавшим нельзя оставлять без присмотра, потому что дыхание может в любой момент остановиться.",
+    steps: [
+      "Устраните опасность для себя и пострадавшего.",
+      "Снимите с пострадавшего очки, если он их носит.",
+      "Встаньте на колени рядом, ноги пострадавшего должны быть прямыми.",
+      "Ближнюю к вам руку положите под прямым углом к телу, согните в локте, ладонь вверх.",
+      "Дальнюю руку положите через грудную клетку, тыльную сторону ладони приложите к щеке.",
+      "Дальнюю ногу возьмите выше колена, поднимите вверх, стопа остаётся на земле.",
+      "Придерживая руку у щеки, надавите на дальнюю ногу и переверните пострадавшего на бок к себе.",
+      "Согните бедро и колено под прямым углом, наклоните голову назад для открытия дыхательных путей.",
+      "Вызовите 103 (112), регулярно проверяйте дыхание до приезда скорой."
+    ],
+    donts: [
+      "Не оставляйте пострадавшего без присмотра.",
+      "Не поднимайте его в вертикальное положение."
+    ]
+  },
+  {
+    id: "reanimaciya",
+    icon: "❤️",
+    name: "Остановка дыхания",
+    when: "Пострадавший без сознания и без дыхания.",
+    why: "Непрямой массаж сердца искусственно прогоняет кровь по телу и питает мозг кислородом, пока сердце не работает. Глубина и частота надавливаний рассчитаны так, чтобы создать достаточный кровоток. У детей и младенцев глубина меньше из-за размеров грудной клетки, и начинают с вдуваний, так как у них чаще причина — нехватка воздуха.",
+    steps: [
+      "Устраните опасность, вызовите 103 (112) и сразу начинайте непрямой массаж сердца непрерывно до приезда скорой.",
+      "Взрослый старше 12 лет: 30 надавливаний на центр грудной клетки основанием ладони (вторая ладонь сверху) на глубину 5–6 см и 2 вдувания в рот.",
+      "Ребёнок от 1 до 12 лет: сначала 5 вдуваний (губами обхватить рот, вдувание 1 секунду), затем 30 надавливаний на центр груди на глубину 4–5 см и 2 вдувания.",
+      "Младенец от 0 до 12 месяцев: 5 вдуваний (губами обхватить одновременно рот и нос), 30 надавливаний двумя пальцами на глубину трети грудной клетки и 2 вдувания.",
+      "При наличии автоматического дефибриллятора применяйте его для повышения шансов на спасение.",
+      "Если дыхание и сердцебиение восстановились — переведите пострадавшего в восстановительное (боковое) положение.",
+      "Не оставляйте без присмотра до прибытия скорой."
+    ],
+    donts: [
+      "Не прерывайте массаж сердца без необходимости.",
+      "Не оставляйте пострадавшего без присмотра."
+    ]
+  },
+  {
+    id: "inorodnoe",
+    icon: "😮‍💨",
+    name: "Подавился (инородное тело)",
+    when: "Инородное тело в верхних дыхательных путях, пострадавший подавился.",
+    why: "Если человек кашляет — кашель сам выталкивает предмет, мешать нельзя. Удары между лопаток и толчки в живот создают резкое давление воздуха в лёгких, которое выбивает застрявший предмет. У беременных и людей с большим животом толчки в живот заменяют на надавливания на грудь, чтобы не навредить.",
+    steps: [
+      "Если пострадавший может говорить, кашлять, плакать — поощряйте кашель, не мешайте, не бейте по спине, контролируйте состояние.",
+      "Если говорить не может — нанесите до пяти скользящих ударов рукой между лопаток.",
+      "Если не помогло — встаньте сзади, обхватите руками, одну руку сожмите в кулак и прижмите со стороны большого пальца к животу между пупком и грудной клеткой.",
+      "Вторую ладонь положите на кулак, сделайте резкие сильные толчки в живот.",
+      "Чередуйте: пять толчков в живот, затем пять ударов по спине — до появления кашля.",
+      "Беременная женщина или человек с большим животом: вместо толчков в живот — пять надавливаний на центр грудной клетки, при неудаче повторяйте удары между лопаток.",
+      "Если пострадавший потерял сознание — переходите к базовой реанимации."
+    ],
+    donts: [
+      "Если человек кашляет и может говорить — не бейте его по спине.",
+      "Не мешайте пострадавшему откашляться самостоятельно."
+    ]
+  },
+  {
+    id: "travma",
+    icon: "🦴",
+    name: "Травма",
+    when: "Травмы различных областей тела: открытые и закрытые, переломы, травма позвоночника.",
+    why: "Холод при закрытой травме сужает сосуды и уменьшает отёк и боль. Фиксация конечности не даёт повреждённым костям смещаться и травмировать ткани. Голову при травме позвоночника держат на одной линии с телом, потому что любое смещение может повредить спинной мозг.",
+    steps: [
+      "Если место безопасно, пострадавший в сознании и дышит — вызовите 103 (112).",
+      "Определите вид травмы: открытая или закрытая.",
+      "Закрытая травма: приложите холод через ткань на 10–15 минут, зафиксируйте конечность подручными средствами, переведите в удобное положение.",
+      "Открытая травма: при кровотечении промойте рану чистой водой, наложите повязку из бинта в несколько слоёв, зафиксируйте конечность.",
+      "При травме позвоночника зафиксируйте голову на одной линии с корпусом, всё время придерживая руками.",
+      "Если видны внутренние органы — закройте влажной тканью, затем полиэтиленом, наложите тугую повязку.",
+      "При сильном кровотечении наложите жгут выше места кровотечения.",
+      "При переломе зафиксируйте пострадавшего в исходном положении до приезда скорой."
+    ],
+    donts: [
+      "Не извлекайте посторонние предметы из груди или живота.",
+      "Не вправляйте кости и не двигайте при подозрении на перелом позвоночника."
+    ]
+  },
+  {
+    id: "obmorozhenie",
+    icon: "🥶",
+    name: "Обморожение",
+    when: "Отморожение и другие эффекты воздействия низких температур.",
+    why: "Постепенное согревание восстанавливает кровоток в тканях без резкого повреждения. Растирание, мази и горячие предметы при обморожении опасны — они травмируют замёрзшие ткани и могут вызвать ожог, так как чувствительность снижена. Алкоголь расширяет сосуды кожи и усиливает теплопотерю.",
+    steps: [
+      "Если пострадавший в сознании и дышит — вызовите 103 (112). Если нет — базовая реанимация и вызов 103 (112).",
+      "Переместите пострадавшего в тёплое помещение.",
+      "Аккуратно снимите одежду и обувь с поражённой области.",
+      "Дайте тёплое питьё.",
+      "Постепенно согревайте поражённую часть тела.",
+      "Наложите повязку из подручных средств на поражённые участки.",
+      "Контролируйте состояние до приезда скорой."
+    ],
+    donts: [
+      "Не растирайте поражённые участки, не втирайте мази, масла, спирт.",
+      "Не прикладывайте горячие предметы (грелку, обогреватель).",
+      "Нельзя употреблять алкоголь."
+    ]
+  },
+  {
+    id: "otravlenie",
+    icon: "☠️",
+    name: "Отравление",
+    when: "Отравление: яд попал через рот, дыхательные пути или кожу.",
+    why: "Обильное питьё разбавляет яд в желудке. Боковое положение не даёт захлебнуться при рвоте. При отравлении нефтепродуктами, кислотами и щелочами рвоту не вызывают — повторный проход едкого вещества обожжёт пищевод и дыхательные пути. Активированный уголь связывает яд в кишечнике.",
+    steps: [
+      "Если пострадавший в сознании и дышит — вызовите 103 (112). Если нет — базовая реанимация и вызов 103 (112).",
+      "Яд попал через рот: дайте выпить большое количество воды, переведите в боковое положение, чтобы не захлебнулся рвотой.",
+      "Яд попал через дыхательные пути: выведите пострадавшего на чистый воздух в безопасное место, обеспечьте удобное положение, освободите от стесняющей одежды.",
+      "Яд попал через кожу или слизистые: очистите поверхность от ядовитого вещества подручными средствами (бинт), промойте кожу или слизистую водой.",
+      "При необходимости дайте адсорбирующие препараты (активированный уголь).",
+      "Контролируйте состояние до приезда скорой."
+    ],
+    donts: [
+      "Не вызывайте рвоту при отравлении нефтепродуктами, кислотами, щёлочью.",
+      "Не давайте слабительные средства при таких отравлениях."
+    ]
+  },
+  {
+    id: "sudorogi",
+    icon: "⚡",
+    name: "Судороги",
+    when: "Пострадавший с судорожным приступом.",
+    why: "Приступ нельзя остановить силой — это бесполезно и опасно: можно сломать кости или вывихнуть суставы. Убирают опасные предметы и кладут мягкое под голову, чтобы человек не травмировался во время судорог. После приступа боковое положение защищает дыхание.",
+    steps: [
+      "Вызовите 103 (112).",
+      "Не пытайтесь остановить приступ и не удерживайте пострадавшего силой.",
+      "Уберите рядом находящиеся предметы, которые могут травмировать.",
+      "Положите под голову мягкую подушку или любое подручное средство.",
+      "Если судороги прекратились и пострадавший в сознании — не допускайте резких движений, контролируйте состояние.",
+      "Если судороги не прекратились, пострадавший без сознания, но дышит — переведите в боковое положение.",
+      "Если нет сознания и дыхания — проводите базовую реанимацию до приезда скорой."
+    ],
+    donts: [
+      "Не пытайтесь остановить приступ силой.",
+      "Не удерживайте пострадавшего насильно.",
+      "Не вкладывайте ничего в рот."
+    ]
+  },
+  {
+    id: "ukus",
+    icon: "🐍",
+    name: "Укус",
+    when: "Укусы животных, змей, насекомых.",
+    why: "Промывание раны водой удаляет часть яда и грязи. Холод замедляет распространение яда и уменьшает отёк. Яд змеи нельзя отсасывать или надрезать рану — это не удаляет яд, но добавляет инфекцию и кровопотерю. Жгут при укусе змеи опасен — он усиливает повреждение тканей.",
+    steps: [
+      "Устраните опасность. Если невозможно — вызовите 103 (112).",
+      "Если место безопасно и пострадавший в сознании и дышит — вызовите 103 (112).",
+      "Определите место укуса на теле.",
+      "При кровотечении: промойте рану водой, наложите давящую повязку из бинта, контролируйте состояние.",
+      "Без кровотечения: промойте рану водой, приложите холод к месту укуса.",
+      "При укусе осы или пчелы аккуратно удалите жало.",
+      "При отёке на месте укуса наложите холодный компресс."
+    ],
+    donts: [
+      "При укусе ядовитой змеи нельзя отсасывать яд.",
+      "Нельзя делать надрез раны.",
+      "Нельзя применять жгуты при укусе змеи."
+    ]
+  },
+  {
+    id: "obmorok",
+    icon: "💫",
+    name: "Обморок",
+    when: "Пострадавший внезапно потерял сознание (обморок).",
+    why: "Приподнятые ноги усиливают приток крови к мозгу — обморок чаще всего вызван временной нехваткой кровоснабжения мозга. Свежий воздух и расстёгнутая одежда облегчают дыхание. Поднимать человека вертикально нельзя — кровь снова отольёт от мозга и обморок повторится.",
+    steps: [
+      "Если пострадавший дышит — вызовите 103 (112). Если не дышит — базовая реанимация и вызов 103 (112).",
+      "Уложите на спину и приподнимите ноги.",
+      "Расстегните сдавливающие части одежды.",
+      "Обеспечьте приток свежего воздуха.",
+      "Протрите лицо прохладной водой или положите мокрое полотенце на лоб.",
+      "При рвоте поверните голову набок или переведите в боковое положение.",
+      "Контролируйте состояние до приезда скорой."
+    ],
+    donts: [
+      "Не поднимайте пострадавшего в вертикальное положение."
+    ]
+  },
+  {
+    id: "bol-grud",
+    icon: "💔",
+    name: "Боль в груди",
+    when: "Сильная, жгучая боль в груди, отдающая в руку или шею.",
+    why: "Такая боль может быть признаком инфаркта. Прекращение нагрузки и удобное положение снижают потребность сердца в кислороде. Расстёгнутая одежда облегчает дыхание. Скорую вызывают немедленно, потому что при инфаркте счёт идёт на минуты.",
+    steps: [
+      "Вызовите 103 (112).",
+      "При необходимости прекратите физическую деятельность.",
+      "Усадите пострадавшего в удобное положение.",
+      "Расстегните стесняющую одежду.",
+      "Контролируйте состояние до приезда скорой.",
+      "При необходимости проведите базовую реанимацию."
+    ],
+    donts: [
+      "Не заставляйте пострадавшего двигаться или идти.",
+      "Не оставляйте без присмотра."
+    ]
+  },
+  {
+    id: "vosstanov",
+    icon: "🔄",
+    name: "Боковое положение",
+    when: "Пострадавший без сознания, но дышит — нужно перевести в безопасное положение.",
+    why: "Восстановительное (боковое) положение удерживает дыхательные пути открытыми и не даёт рвотным массам или языку перекрыть дыхание. Это базовый приём, который применяется при любом бессознательном состоянии с сохранённым дыханием.",
+    steps: [
+      "Снимите с пострадавшего очки, если он их носит.",
+      "Встаньте на колени рядом, ноги пострадавшего прямые.",
+      "Ближнюю руку положите под прямым углом к телу, согните в локте ладонью вверх.",
+      "Дальнюю руку положите через грудь, тыльную сторону ладони приложите к щеке.",
+      "Дальнюю ногу возьмите выше колена, поднимите, стопа остаётся на земле.",
+      "Придерживая руку у щеки, надавите на дальнюю ногу и переверните пострадавшего на бок к себе.",
+      "Согните бедро и колено под прямым углом, наклоните голову назад.",
+      "Регулярно проверяйте дыхание до приезда скорой 103 (112)."
+    ],
+    donts: [
+      "Не оставляйте пострадавшего без присмотра."
+    ]
+  },
+  {
+    id: "transport",
+    icon: "🚚",
+    name: "Транспортировка",
+    when: "Нужно переместить пострадавшего до приезда скорой.",
+    why: "Поза при транспортировке зависит от травмы: она должна не давать смещаться повреждённым частям тела и защищать дыхание. Неправильное положение при перемещении может усилить травму, особенно при повреждении позвоночника.",
+    steps: [
+      "Без сознания: транспортируйте в восстановительном (боковом) положении.",
+      "Травма головы и шеи: на спине, валики вокруг головы и мягкий валик под шеей.",
+      "Травма позвоночника: на твёрдых носилках на спине с валиками под шеей, поясницей и коленями — или на мягких носилках на животе.",
+      "Травма грудной клетки: полусидя с валиком под коленями или в боковом положении на повреждённой стороне.",
+      "Травма живота: в боковом положении.",
+      "Травма таза: на спине с валиком под коленями и слегка разведёнными ногами.",
+      "Если нет сознания и дыхания — проводите базовую реанимацию и вызовите 103 (112)."
+    ],
+    donts: [
+      "Не перемещайте при травме позвоночника без фиксации.",
+      "Не транспортируйте без необходимости — дождитесь скорой, если возможно."
+    ]
+  },
+  {
+    id: "ocenka",
+    icon: "🔍",
+    name: "Оценка обстановки",
+    when: "Первые действия на месте происшествия до оказания помощи.",
+    why: "Перед помощью нужно убедиться, что место безопасно — иначе спасатель сам станет пострадавшим. Оценка сознания, дыхания и кровотечения определяет, что делать в первую очередь: остановить кровь, начать реанимацию или перевести в боковое положение.",
+    steps: [
+      "Определите угрожающие факторы для своей жизни и здоровья.",
+      "Определите угрожающие факторы для жизни и здоровья пострадавшего.",
+      "Устраните угрожающие факторы.",
+      "Прекратите действие повреждающих факторов на пострадавшего.",
+      "Оцените количество пострадавших.",
+      "При необходимости переместите пострадавшего в безопасное место.",
+      "Оцените состояние: есть ли опасное кровотечение, есть ли сознание, есть ли дыхание.",
+      "Вызовите скорую по номеру 103 (или 112)."
+    ],
+    donts: [
+      "Не бросайтесь помогать, не убедившись в собственной безопасности."
+    ]
+  },
+  {
+    id: "vyzov",
+    icon: "📋",
+    name: "Как вызвать скорую",
+    when: "Что сказать диспетчеру при вызове скорой помощи.",
+    why: "Точные данные помогают диспетчеру направить нужную бригаду и быстро найти место. Без адреса и ориентиров скорая теряет время на поиск, а это критично при тяжёлых состояниях.",
+    steps: [
+      "Позвоните по номеру 103 (скорая помощь) или 112 (единая служба).",
+      "Назовите фамилию, имя, отчество, возраст и пол пострадавшего (со слов пострадавшего).",
+      "Опишите состояние пострадавшего и обстоятельства несчастного случая, травмы или заболевания.",
+      "Назовите точный адрес и телефон.",
+      "Сообщите ориентировочные данные по проезду к месту нахождения пострадавшего.",
+      "Не кладите трубку первым — дождитесь, пока диспетчер задаст все вопросы."
+    ],
+    donts: [
+      "Не паникуйте — говорите чётко и по существу.",
+      "Не кладите трубку, пока диспетчер не подтвердит вызов."
+    ]
+  }
+];
+
+/* ===== ОБУЧЕНИЕ — «почему так» ===== */
+const LEARN_DATA = [
+  {
+    q: "Почему при ожоге нельзя мазать маслом или сметаной?",
+    a: "Жирная плёнка удерживает тепло внутри тканей и мешает им остыть, из-за чего ожог становится глубже. По стандарту ожог охлаждают холодной водой не менее 15 минут и накрывают чистой влажной повязкой — это снимает тепло и защищает рану."
+  },
+  {
+    q: "Почему жгут накладывают именно ВЫШЕ раны?",
+    a: "Кровь к рукам и ногам поступает от центра тела. Если пережать сосуд выше раны, приток крови к месту повреждения прекращается. Жгут ниже раны кровотечение не остановит."
+  },
+  {
+    q: "Почему нельзя запрокидывать голову при кровотечении из носа?",
+    a: "При запрокинутой голове кровь стекает по задней стенке в горло и желудок — это вызывает рвоту и мешает оценить кровопотерю. Правильно: наклонить голову вперёд, сжать крылья носа на 10–15 минут и приложить холод к переносице."
+  },
+  {
+    q: "Почему человека без сознания кладут на бок?",
+    a: "У лежащего на спине человека без сознания язык может запасть и перекрыть дыхание, а при рвоте массы попадут в лёгкие. Боковое (восстановительное) положение держит дыхательные пути открытыми и выводит рвоту наружу."
+  },
+  {
+    q: "Почему при судорогах нельзя удерживать человека силой?",
+    a: "Приступ невозможно остановить, удерживая тело, а сильное сопротивление мышц при этом приводит к переломам и вывихам. Нужно убрать опасные предметы вокруг и положить мягкое под голову, чтобы человек не травмировался."
+  },
+  {
+    q: "Почему при укусе змеи нельзя отсасывать яд?",
+    a: "Отсасывание не удаляет яд, который уже разошёлся по тканям, зато заносит инфекцию в рану и в рот спасателя. Надрезы и жгуты тоже запрещены — они усиливают повреждение. Нужно промыть рану водой и приложить холод."
+  },
+  {
+    q: "Почему при обмороке поднимают ноги?",
+    a: "Обморок — это кратковременная нехватка крови в мозге. Если приподнять ноги лежащему человеку, кровь приливает к голове и сознание возвращается быстрее. Поднимать человека вертикально нельзя — обморок повторится."
+  },
+  {
+    q: "Почему детям при реанимации сначала делают вдувания?",
+    a: "У детей и младенцев остановка сердца чаще всего происходит из-за нехватки кислорода, а не из-за проблем с самим сердцем. Поэтому начинают с 5 вдуваний, чтобы наполнить лёгкие воздухом, и только потом делают надавливания."
+  },
+  {
+    q: "Почему нельзя извлекать предмет, торчащий из раны?",
+    a: "Посторонний предмет в ране частично закупоривает повреждённый сосуд. Если его вытащить, начнётся сильное кровотечение. Предмет оставляют на месте, а повязку накладывают вокруг него."
+  },
+  {
+    q: "Почему при отравлении кислотой или щёлочью нельзя вызывать рвоту?",
+    a: "Едкое вещество при рвоте повторно проходит через пищевод и глотку и обжигает их второй раз, а пары могут попасть в дыхательные пути. При отравлении нефтепродуктами, кислотами и щёлочью рвоту не вызывают."
+  },
+  {
+    q: "Почему обмороженные участки нельзя растирать?",
+    a: "Замёрзшие ткани хрупкие, а чувствительность снижена. Растирание повреждает их, а горячие предметы могут вызвать ожог незаметно для пострадавшего. Согревать нужно постепенно, в тёплом помещении, с тёплым питьём."
+  },
+  {
+    q: "Почему важно сначала оценить, безопасно ли место?",
+    a: "Если спасатель бросится помогать в опасной зоне (огонь, ток, движение машин), он сам станет пострадавшим, и помочь будет уже некому. Стандарт требует сначала устранить угрозу для себя и пострадавшего."
+  }
+];
+
+/* ===== ЗВОНОК — экстренные службы ===== */
+const CALL_DATA = [
+  { num: "103", name: "Скорая помощь", desc: "Бригада скорой медицинской помощи. Звоните при любой угрозе жизни и здоровью.", cls: "" },
+  { num: "112", name: "Единая служба спасения", desc: "Единый номер экстренных служб. Работает даже без SIM-карты и баланса.", cls: "green" },
+  { num: "101", name: "Пожарная служба", desc: "Пожар, задымление, запах гари.", cls: "blue" },
+  { num: "102", name: "Полиция", desc: "Происшествие, угроза, нужна охрана правопорядка.", cls: "blue" }
+];
+
+/* ===== ПОГОДНЫЕ ПРЕДУПРЕЖДЕНИЯ (демо-набор) ===== */
+const WEATHER_TIPS = {
+  heat:  { icon: "🥵", title: "Жара", desc: "Высокая температура. Пейте воду, избегайте солнца 12:00–16:00, помните про тепловой удар." },
+  cold:  { icon: "🥶", title: "Сильный мороз", desc: "Риск обморожения. Одевайтесь теплее, прикрывайте лицо и руки." },
+  storm: { icon: "⛈️", title: "Гроза / буря", desc: "Не находитесь под деревьями и на открытых местах. Будьте дома." },
+  ice:   { icon: "🧊", title: "Гололёд", desc: "Скользко — высокий риск падений и переломов. Двигайтесь осторожно." },
+  ok:    { icon: "🌤️", title: "Погода спокойная", desc: "Особых предупреждений нет. Прогноз обновится при подключении к интернету." }
+};
+
+
+/* ============================================================
+   SaneUp — ЛОГИКА ПРИЛОЖЕНИЯ (многоязычная версия)
+   Работает полностью офлайн.
+   ============================================================ */
+
+/* ---------- СОСТОЯНИЕ ---------- */
+const State = {
+  screen: "home",
+  lang: "ru",
+  online: navigator.onLine,
+  firstLaunchOffline: false,
+  geoAllowed: false,
+  coords: null
+};
+
+/* ---------- ХРАНИЛИЩЕ ---------- */
+const Store = {
+  data: {},
+  load() {
+    try {
+      const raw = localStorage.getItem("saneup");
+      if (raw) this.data = JSON.parse(raw);
+    } catch (e) {}
+  },
+  save() {
+    try { localStorage.setItem("saneup", JSON.stringify(this.data)); }
+    catch (e) {}
+  },
+  get(k, def) { return (k in this.data) ? this.data[k] : def; },
+  set(k, v) { this.data[k] = v; this.save(); }
+};
+
+/* ---------- ПЕРЕВОДЧИК ---------- */
+function t(key) {
+  const pack = UI[State.lang] || UI.ru;
+  return (key in pack) ? pack[key] : (UI.ru[key] || key);
+}
+
+/* Какой контент-язык использовать для медицинских текстов:
+   для kk/ru/en — свой, для остальных — английский. */
+function contentLang() {
+  return FULL_CONTENT_LANGS.includes(State.lang) ? State.lang : "en";
+}
+
+/* Берём данные первой помощи на нужном языке */
+function getHelpData() {
+  const cl = contentLang();
+  if (cl === "kk") return mergeHelp(HELP_KK);
+  if (cl === "en") return mergeHelp(HELP_EN);
+  return HELP_DATA;  // ru — базовый
+}
+/* объединяем переводы с иконками из базового HELP_DATA */
+function mergeHelp(translated) {
+  return HELP_DATA.map(base => {
+    const tr = translated[base.id] || {};
+    return {
+      id: base.id,
+      icon: base.icon,
+      name: tr.name || base.name,
+      when: tr.when || base.when,
+      why: tr.why || base.why,
+      steps: tr.steps || base.steps,
+      donts: tr.donts || base.donts
+    };
+  });
+}
+
+function getLearnData() {
+  const cl = contentLang();
+  if (cl === "kk") return LEARN_KK;
+  if (cl === "en") return LEARN_EN;
+  return LEARN_DATA;
+}
+
+function getCallData() {
+  const tr = CALL_I18N[State.lang] || CALL_I18N.ru;
+  return CALL_DATA.map((base, i) => ({
+    num: base.num,
+    cls: base.cls,
+    name: (tr[i] && tr[i].name) || base.name,
+    desc: (tr[i] && tr[i].desc) || base.desc
+  }));
+}
+
+/* ---------- ТОСТ ---------- */
+let toastTimer = null;
+function toast(msg) {
+  const el = document.getElementById("toast");
+  el.textContent = msg;
+  el.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove("show"), 3200);
+}
+
+/* ---------- СЕТЬ ---------- */
+function updateNetUI() {
+  State.online = navigator.onLine;
+  const dot = document.getElementById("netDot");
+  const label = document.getElementById("netLabel");
+  if (State.online) { dot.classList.add("online"); label.textContent = t("online"); }
+  else { dot.classList.remove("online"); label.textContent = t("offline"); }
+}
+window.addEventListener("online", () => {
+  updateNetUI();
+  toast(t("toastOnline"));
+  fetchWeekWeather();
+});
+window.addEventListener("offline", () => {
+  updateNetUI();
+  toast(t("toastOffline"));
+});
+
+/* ============================================================
+   ПОГОДА
+   ============================================================ */
+function getCachedWeather() { return Store.get("weather", null); }
+
+async function fetchWeekWeather() {
+  if (!navigator.onLine) return;
+  try {
+    const lat = State.coords ? State.coords.lat : 51.13;
+    const lon = State.coords ? State.coords.lon : 71.43;
+    const url = "https://api.open-meteo.com/v1/forecast"
+      + "?latitude=" + lat + "&longitude=" + lon
+      + "&daily=temperature_2m_max,temperature_2m_min,weathercode"
+      + "&forecast_days=7&timezone=auto";
+    const res = await fetch(url);
+    const json = await res.json();
+    Store.set("weather", { updated: Date.now(), days: json.daily });
+    renderWeatherBanner();
+  } catch (e) {}
+}
+
+/* определяем тип предупреждения: heat/cold/storm/ice/ok */
+function weatherKind() {
+  const w = getCachedWeather();
+  if (!w || !w.days) return "ok";
+  const tmax = w.days.temperature_2m_max ? w.days.temperature_2m_max[0] : null;
+  const tmin = w.days.temperature_2m_min ? w.days.temperature_2m_min[0] : null;
+  const code = w.days.weathercode ? w.days.weathercode[0] : 0;
+  if (tmax !== null && tmax >= 32) return "heat";
+  if (tmin !== null && tmin <= -20) return "cold";
+  if ([95, 96, 99].includes(code)) return "storm";
+  if ([56, 57, 66, 67].includes(code)) return "ice";
+  if (tmin !== null && tmin <= 0 && tmax !== null && tmax >= 0) return "ice";
+  return "ok";
+}
+
+function renderWeatherBanner() {
+  const el = document.getElementById("weatherBanner");
+  if (!el) return;
+  const kind = weatherKind();
+  const tips = WEATHER_I18N[State.lang] || WEATHER_I18N.ru;
+  const tip = tips[kind];
+  const isWarn = kind !== "ok";
+  let extra = getCachedWeather() ? "" : t("weatherNotLoaded");
+  el.className = "weather-banner" + (isWarn ? " warn" : "");
+  el.innerHTML =
+    '<div class="wicon">' + WEATHER_ICONS[kind] + '</div>' +
+    '<div class="wtext">' +
+      '<div class="wtitle">' + (isWarn ? "⚠️ " : "") + tip.title + '</div>' +
+      '<div class="wdesc">' + tip.desc + extra + '</div>' +
+    '</div>';
+}
+
+/* ============================================================
+   ГЕОЛОКАЦИЯ
+   ============================================================ */
+function requestGeo(callback) {
+  if (!navigator.geolocation) {
+    toast(t("toastGeoFail"));
+    if (callback) callback(null);
+    return;
+  }
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      State.geoAllowed = true;
+      State.coords = { lat: pos.coords.latitude, lon: pos.coords.longitude };
+      Store.set("coords", State.coords);
+      if (callback) callback(State.coords);
+    },
+    err => {
+      State.geoAllowed = false;
+      toast(t("toastGeoFail"));
+      if (callback) callback(null);
+    },
+    { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
+  );
+}
+
+function initGeoOnLaunch() {
+  const saved = Store.get("coords", null);
+  if (saved) State.coords = saved;
+  if (navigator.onLine) {
+    requestGeo(() => { fetchWeekWeather(); });
+  }
+}
+
+/* ============================================================
+   ПЕРВЫЙ ЗАПУСК + ЯЗЫК
+   ============================================================ */
+function initFirstLaunch() {
+  Store.load();
+  const launched = Store.get("launched", false);
+  if (!launched) {
+    State.firstLaunchOffline = !navigator.onLine;
+    Store.set("launched", true);
+    Store.set("firstLaunchOffline", State.firstLaunchOffline);
+  } else {
+    State.firstLaunchOffline = Store.get("firstLaunchOffline", false);
+  }
+  // язык: сохранённый -> язык браузера -> русский
+  let lang = Store.get("lang", null);
+  if (!lang) {
+    const nav = (navigator.language || "ru").slice(0, 2).toLowerCase();
+    lang = LANGS.some(l => l.code === nav) ? nav : "ru";
+  }
+  State.lang = lang;
+}
+
+function setLang(code) {
+  if (!LANGS.some(l => l.code === code)) return;
+  State.lang = code;
+  Store.set("lang", code);
+  applyDir();
+  render();
+}
+
+/* направление текста (RTL для арабского) */
+function applyDir() {
+  const langObj = LANGS.find(l => l.code === State.lang) || LANGS[1];
+  document.documentElement.setAttribute("lang", State.lang);
+  document.documentElement.setAttribute("dir", langObj.dir);
+}
+
+/* ============================================================
+   РЕНДЕР ЭКРАНОВ
+   ============================================================ */
+const main = document.getElementById("main");
+
+function esc(s) {
+  return String(s).replace(/[&<>"]/g, c =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+}
+
+/* выпадающий переключатель языка */
+function langSelector() {
+  const cur = LANGS.find(l => l.code === State.lang) || LANGS[1];
+  let opts = LANGS.map(l =>
+    '<option value="' + l.code + '"' +
+    (l.code === State.lang ? " selected" : "") + '>' +
+    l.flag + " " + l.name + '</option>'
+  ).join("");
+  return '<select id="langSelect" class="lang-select" ' +
+         'aria-label="' + t("langTitle") + '">' + opts + '</select>';
+}
+
+/* --- ГЛАВНЫЙ --- */
+function screenHome() {
+  return `
+    <div class="screen active">
+      <div class="weather-banner" id="weatherBanner"></div>
+      <div class="hero">
+        <h2>${esc(t("appTitle"))}</h2>
+        <p>${esc(t("appSub"))}</p>
+      </div>
+      <div class="menu-grid">
+        <button class="menu-btn help" data-go="help">
+          <div class="ic">🚑</div>
+          <div class="label">${esc(t("mHelp"))}</div>
+          <div class="sub">${esc(t("mHelpSub"))}</div>
+        </button>
+        <button class="menu-btn learn" data-go="learn">
+          <div class="ic">📘</div>
+          <div class="label">${esc(t("mLearn"))}</div>
+          <div class="sub">${esc(t("mLearnSub"))}</div>
+        </button>
+        <button class="menu-btn call" data-go="call">
+          <div class="ic">📞</div>
+          <div class="label">${esc(t("mCall"))}</div>
+          <div class="sub">${esc(t("mCallSub"))}</div>
+        </button>
+        <button class="menu-btn info" data-go="info">
+          <div class="ic">ℹ️</div>
+          <div class="label">${esc(t("mInfo"))}</div>
+          <div class="sub">${esc(t("mInfoSub"))}</div>
+        </button>
+      </div>
+    </div>`;
+}
+
+/* --- ПОМОЩЬ (16 ячеек + поиск) --- */
+function screenHelp(query) {
+  query = (query || "").toLowerCase().trim();
+  const data = getHelpData();
+  const filtered = data.filter(item => {
+    if (!query) return true;
+    return item.name.toLowerCase().includes(query)
+        || item.when.toLowerCase().includes(query)
+        || item.id.toLowerCase().includes(query);
+  });
+
+  let cells;
+  if (filtered.length === 0) {
+    cells = '<div class="no-results">' + esc(t("noResults")) +
+            '<br>' + esc(t("tryOther")) + '</div>';
+  } else {
+    cells = filtered.map(item =>
+      '<button class="cell" data-help="' + item.id + '">' +
+        '<div class="cic">' + item.icon + '</div>' +
+        '<div class="cname">' + esc(item.name) + '</div>' +
+      '</button>'
+    ).join("");
+  }
+
+  const enNote = !FULL_CONTENT_LANGS.includes(State.lang)
+    ? '<div class="en-note">🌐 ' + esc(t("contentEnNote")) + '</div>'
+    : '';
+
+  return `
+    <div class="screen active">
+      <button class="back" data-go="home">${esc(t("back"))}</button>
+      <div class="screen-title">${esc(t("mHelp"))}</div>
+      <div class="screen-desc">${esc(t("helpDesc"))}</div>
+      ${enNote}
+      <div class="search-wrap">
+        <span class="sicon">🔍</span>
+        <input id="helpSearch" type="text" autocomplete="off"
+               placeholder="${esc(t("searchPh"))}" value="${esc(query)}">
+        <button class="clr" id="helpClear">✕</button>
+      </div>
+      <div class="cells">${cells}</div>
+    </div>`;
+}
+
+/* --- ДЕТАЛЬНАЯ КАРТОЧКА --- */
+function screenDetail(id) {
+  const item = getHelpData().find(x => x.id === id);
+  if (!item) return screenHelp("");
+
+  const steps = item.steps.map(s => "<li>" + esc(s) + "</li>").join("");
+  const donts = (item.donts && item.donts.length)
+    ? '<div class="block danger"><h4><span class="bic">🚫</span>' +
+      esc(t("dontDo")) + '</h4><ul class="donts">' +
+      item.donts.map(d => "<li>" + esc(d) + "</li>").join("") + '</ul></div>'
+    : '';
+
+  return `
+    <div class="screen active">
+      <button class="back" data-back-help="1">${esc(t("backList"))}</button>
+      <div class="detail-head">
+        <div class="dic">${item.icon}</div>
+        <div>
+          <h3>${esc(item.name)}</h3>
+          <div class="dwhen">${esc(item.when)}</div>
+        </div>
+      </div>
+      <div class="block">
+        <h4><span class="bic">✅</span>${esc(t("doSteps"))}</h4>
+        <ol class="steps">${steps}</ol>
+      </div>
+      ${donts}
+      <div class="block why">
+        <h4><span class="bic">💡</span>${esc(t("whyTitle"))}</h4>
+        <div class="whytext">${esc(item.why)}</div>
+      </div>
+    </div>`;
+}
+
+/* --- ОБУЧЕНИЕ --- */
+function screenLearn() {
+  const data = getLearnData();
+  const enNote = !FULL_CONTENT_LANGS.includes(State.lang)
+    ? '<div class="en-note">🌐 ' + esc(t("contentEnNote")) + '</div>'
+    : '';
+  const cards = data.map((c, i) =>
+    '<div class="learn-card" data-learn="' + i + '">' +
+      '<div class="learn-q">' +
+        '<span class="qmark">?</span>' +
+        '<span>' + esc(c.q) + '</span>' +
+        '<span class="chev">▼</span>' +
+      '</div>' +
+      '<div class="learn-a"><div class="inner">' + esc(c.a) + '</div></div>' +
+    '</div>'
+  ).join("");
+
+  return `
+    <div class="screen active">
+      <button class="back" data-go="home">${esc(t("back"))}</button>
+      <div class="screen-title">${esc(t("mLearn"))}</div>
+      <div class="screen-desc">${esc(t("learnDesc"))}</div>
+      ${enNote}
+      ${cards}
+    </div>`;
+}
+
+/* --- ЗВОНОК --- */
+function screenCall() {
+  const data = getCallData();
+  const list = data.map(c =>
+    '<button class="call-btn ' + c.cls + '" data-call="' + c.num + '">' +
+      '<div class="cnum">' + c.num + '</div>' +
+      '<div class="ctext">' +
+        '<div class="cname">' + esc(c.name) + '</div>' +
+        '<div class="cdesc">' + esc(c.desc) + '</div>' +
+      '</div>' +
+      '<div class="cphone">📞</div>' +
+    '</button>'
+  ).join("");
+
+  let geoInfo;
+  if (State.firstLaunchOffline && !State.geoAllowed) {
+    geoInfo =
+      '<div class="geo-box">' +
+        '<div class="geo-title">📍 ' + esc(t("geoTitle")) + '</div>' +
+        esc(t("geoOfflineMsg")) +
+        '<br><button class="geo-btn" id="geoManual">' +
+        esc(t("geoBtn")) + '</button>' +
+        '<div class="geo-coords" id="geoCoords"></div>' +
+      '</div>';
+  } else {
+    const c = State.coords;
+    geoInfo =
+      '<div class="geo-box">' +
+        '<div class="geo-title">📍 ' + esc(t("geoMyTitle")) + '</div>' +
+        (c
+          ? esc(t("geoOkMsg")) +
+            '<div class="geo-coords" id="geoCoords">' +
+            esc(t("geoLat")) + " " + c.lat.toFixed(5) + ", " +
+            esc(t("geoLon")) + " " + c.lon.toFixed(5) + '</div>'
+          : esc(t("geoNoMsg")) +
+            '<br><button class="geo-btn" id="geoManual">' +
+            esc(t("geoBtn")) + '</button>' +
+            '<div class="geo-coords" id="geoCoords"></div>') +
+      '</div>';
+  }
+
+  return `
+    <div class="screen active">
+      <button class="back" data-go="home">${esc(t("back"))}</button>
+      <div class="screen-title">${esc(t("mCall"))}</div>
+      <div class="screen-desc">${esc(t("callDesc"))}</div>
+      <div class="call-note">${esc(t("callNote"))}</div>
+      <div class="call-list">${list}</div>
+      ${geoInfo}
+    </div>`;
+}
+
+/* --- О ПРИЛОЖЕНИИ --- */
+function screenInfo() {
+  return `
+    <div class="screen active">
+      <button class="back" data-go="home">${esc(t("back"))}</button>
+      <div class="screen-title">${esc(t("mInfo"))}</div>
+      <div class="screen-desc">${esc(t("infoDesc"))}</div>
+      <div class="info-card">
+        <h4>${esc(t("infoOfflineT"))}</h4>
+        ${esc(t("infoOfflineB"))}
+      </div>
+      <div class="info-card">
+        <h4>${esc(t("infoSectT"))}</h4>
+        <ul>
+          <li><b>${esc(t("mHelp"))}</b> — ${esc(t("mHelpSub"))}</li>
+          <li><b>${esc(t("mLearn"))}</b> — ${esc(t("mLearnSub"))}</li>
+          <li><b>${esc(t("mCall"))}</b> — ${esc(t("mCallSub"))}</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h4>${esc(t("infoSrcT"))}</h4>
+        ${esc(t("infoSrcB"))}
+      </div>
+      <div class="info-card">
+        <h4>${esc(t("infoImpT"))}</h4>
+        ${esc(t("infoImpB"))}
+      </div>
+    </div>`;
+}
+
+/* ============================================================
+   НАВИГАЦИЯ
+   ============================================================ */
+let helpQuery = "";
+
+function render() {
+  switch (State.screen) {
+    case "home":  main.innerHTML = screenHome(); renderWeatherBanner(); break;
+    case "help":  main.innerHTML = screenHelp(helpQuery); bindSearch(); break;
+    case "learn": main.innerHTML = screenLearn(); break;
+    case "call":  main.innerHTML = screenCall(); break;
+    case "info":  main.innerHTML = screenInfo(); break;
+    default:
+      if (State.screen.startsWith("detail:"))
+        main.innerHTML = screenDetail(State.screen.split(":")[1]);
+  }
+  updateHeader();
+  updateTabbar();
+  main.scrollTop = 0;
+}
+
+function go(screen) { State.screen = screen; render(); }
+
+/* шапка: логотип + язык + сеть */
+function updateHeader() {
+  const sel = document.getElementById("langSlot");
+  if (sel) sel.innerHTML = langSelector();
+  updateNetUI();
+}
+
+function updateTabbar() {
+  const tab = State.screen.startsWith("detail:") ? "help" : State.screen;
+  document.querySelectorAll("#tabbar button").forEach(b => {
+    b.classList.toggle("active", b.dataset.go === tab);
+  });
+  // подписи вкладок
+  const map = { home: "tabHome", help: "tabHelp", learn: "tabLearn", call: "tabCall" };
+  document.querySelectorAll("#tabbar button").forEach(b => {
+    const span = b.querySelector(".tlabel");
+    if (span && map[b.dataset.go]) span.textContent = t(map[b.dataset.go]);
+  });
+}
+
+/* ---------- ПОИСК ---------- */
+function bindSearch() {
+  const input = document.getElementById("helpSearch");
+  const clr = document.getElementById("helpClear");
+  if (!input) return;
+  if (helpQuery) clr.style.display = "flex";
+
+  input.addEventListener("input", () => {
+    helpQuery = input.value;
+    clr.style.display = helpQuery ? "flex" : "none";
+    const cellsBox = document.querySelector(".cells");
+    if (cellsBox) {
+      const tmp = document.createElement("div");
+      tmp.innerHTML = screenHelp(helpQuery);
+      cellsBox.innerHTML = tmp.querySelector(".cells").innerHTML;
+    }
+  });
+  clr.addEventListener("click", () => {
+    helpQuery = "";
+    input.value = "";
+    clr.style.display = "none";
+    render();
+  });
+
+  const pos = input.value.length;
+  input.focus();
+  try { input.setSelectionRange(pos, pos); } catch (e) {}
+}
+
+/* ============================================================
+   ОБРАБОТКА СОБЫТИЙ
+   ============================================================ */
+document.addEventListener("click", e => {
+  const t2 = e.target.closest(
+    "[data-go],[data-help],[data-back-help],[data-learn],[data-call],#geoManual");
+  if (!t2) return;
+
+  if (t2.dataset.go) { go(t2.dataset.go); return; }
+  if (t2.dataset.help) { go("detail:" + t2.dataset.help); return; }
+  if (t2.dataset.backHelp) { go("help"); return; }
+  if (t2.dataset.learn !== undefined) {
+    t2.closest(".learn-card").classList.toggle("open");
+    return;
+  }
+  if (t2.dataset.call) { makeCall(t2.dataset.call); return; }
+  if (t2.id === "geoManual") {
+    toast(t("toastGeoSearch"));
+    requestGeo(coords => {
+      const box = document.getElementById("geoCoords");
+      if (coords && box) {
+        box.textContent = t("geoLat") + " " + coords.lat.toFixed(5) +
+                          ", " + t("geoLon") + " " + coords.lon.toFixed(5);
+        toast(t("toastGeoOk"));
+      }
+    });
+    return;
+  }
+});
+
+/* переключение языка */
+document.addEventListener("change", e => {
+  if (e.target && e.target.id === "langSelect") {
+    setLang(e.target.value);
+  }
+});
+
+/* ---------- ЗВОНОК ---------- */
+function makeCall(number) {
+  if (!State.firstLaunchOffline) {
+    requestGeo(coords => {
+      if (coords) {
+        toast(t("toastCallGeo") +
+              coords.lat.toFixed(4) + ", " + coords.lon.toFixed(4));
+      }
+    });
+  } else {
+    toast(t("toastCallOffline"));
+  }
+  window.location.href = "tel:" + number;
+}
+
+/* ============================================================
+   ЗАПУСК
+   ============================================================ */
+function boot() {
+  document.getElementById("logoImg").src = LOGO_BASE64;
+  initFirstLaunch();
+  applyDir();
+  updateNetUI();
+  initGeoOnLaunch();
+  if (navigator.onLine) fetchWeekWeather();
+  go("home");
+}
+
+boot();
+
+</script>
+<script>
+/* Регистрация Service Worker для офлайн-работы SaneUp */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('sw.js').catch(function () {});
+  });
+}
+</script>
+</body>
+</html>
